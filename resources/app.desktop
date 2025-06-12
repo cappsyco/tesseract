@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Tesseract
+Comment=An application for the COSMIC™ desktop
+Type=Application
+Icon=co.uk.cappsy.tesseract
+Exec=tesseract %F
+Terminal=false
+StartupNotify=true
+Categories=COSMIC
+Keywords=COSMIC
+MimeType=
