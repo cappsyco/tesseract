@@ -1,11 +1,11 @@
-enum Status {
+pub enum Status {
     Stopped,
     Hold,
     Running,
 }
-struct Clock {
-    time: String,
-    status: Status,
+pub struct Clock {
+    pub time: String,
+    pub status: Status,
 }
 impl Clock {
     fn default() -> Self {

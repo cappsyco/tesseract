@@ -3,7 +3,7 @@
 mod app;
 mod config;
 mod i18n;
-mod scramble;
+mod scrambler;
 mod timer;
 
 fn main() -> cosmic::iced::Result {

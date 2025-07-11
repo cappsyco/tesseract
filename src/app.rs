@@ -2,7 +2,7 @@
 
 use crate::config::Config;
 use crate::fl;
-use crate::{scramble, timer};
+use crate::{scrambler::Scramble, timer};
 use cosmic::app::context_drawer;
 use cosmic::cosmic_config::{self, CosmicConfigEntry};
 use cosmic::iced::{Alignment, Length, Subscription};
@@ -22,6 +22,8 @@ pub struct AppModel {
     nav: nav_bar::Model,
     key_binds: HashMap<menu::KeyBind, MenuAction>,
     config: Config,
+
+    current_scramble: Scramble,
 }
 
 #[derive(Debug, Clone)]
@@ -81,6 +83,7 @@ impl cosmic::Application for AppModel {
                     Err((_errors, config)) => config,
                 })
                 .unwrap_or_default(),
+            current_scramble: Scramble::new(),
         };
 
         let command = app.update_title();
@@ -136,23 +139,24 @@ impl cosmic::Application for AppModel {
             .align_x(Alignment::Start);
 
         // Scramble
+        page_content = page_content.push(Space::with_height(100));
         page_content = page_content.push(
             widget::row().push(
                 widget::column().push(
-                    widget::text::text("D2 L2 R' U L2 R2 D' B' D B R' F2 A L' F' B2 L2 R D L")
+                    widget::text::text(self.current_scramble.moves.join("  "))
                         .size(35)
                         .center()
                         .width(Length::Fill),
                 ),
             ),
         );
-        page_content = page_content.push(Space::with_height(100));
 
         // Timer
+        page_content = page_content.push(Space::with_height(130));
         page_content = page_content.push(
             widget::row().push(
                 widget::column()
-                    .push(widget::text::title1("00:00.00").size(110))
+                    .push(widget::text::title1("00:00.00").size(130))
                     .width(Length::Fill)
                     .align_x(Alignment::Center),
             ),
