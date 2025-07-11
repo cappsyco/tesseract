@@ -2,7 +2,7 @@
 
 use crate::config::Config;
 use crate::fl;
-use crate::{scrambler::Scramble, timer};
+use crate::{scrambler::Scramble, timer::Timer};
 use cosmic::app::context_drawer;
 use cosmic::cosmic_config::{self, CosmicConfigEntry};
 use cosmic::iced::{Alignment, Length, Subscription};
@@ -24,6 +24,7 @@ pub struct AppModel {
     config: Config,
 
     current_scramble: Scramble,
+    timer: Timer,
 }
 
 #[derive(Debug, Clone)]
@@ -33,6 +34,7 @@ pub enum Message {
     SubscriptionChannel,
     UpdateConfig(Config),
     LaunchUrl(String),
+    Rescramble,
 }
 
 impl cosmic::Application for AppModel {
@@ -83,7 +85,9 @@ impl cosmic::Application for AppModel {
                     Err((_errors, config)) => config,
                 })
                 .unwrap_or_default(),
+
             current_scramble: Scramble::new(),
+            timer: Timer::default(),
         };
 
         let command = app.update_title();
@@ -136,36 +140,49 @@ impl cosmic::Application for AppModel {
         let mut page_content = widget::column()
             .padding(0.)
             .width(Length::Fill)
-            .align_x(Alignment::Start);
+            .align_x(Alignment::Center);
 
         // Scramble
-        page_content = page_content.push(Space::with_height(100));
         page_content = page_content.push(
-            widget::row().push(
-                widget::column().push(
-                    widget::text::text(self.current_scramble.moves.join("  "))
-                        .size(35)
-                        .center()
-                        .width(Length::Fill),
-                ),
-            ),
+            widget::column()
+                .push(
+                    widget::button::icon(
+                        widget::icon::from_name("view-refresh-symbolic").size(100),
+                    )
+                    .on_press(Message::Rescramble),
+                )
+                .width(Length::Fill)
+                .align_x(Alignment::Center)
+                .padding(10),
+        );
+        page_content = page_content.push(
+            widget::column()
+                .push(widget::text::text(self.current_scramble.moves.join("  ")).size(40))
+                .align_x(Alignment::Center)
+                .width(Length::Fill),
         );
 
         // Timer
-        page_content = page_content.push(Space::with_height(130));
+        page_content = page_content.push(Space::with_height(70));
         page_content = page_content.push(
             widget::row().push(
-                widget::column()
-                    .push(widget::text::title1("00:00.00").size(130))
+                widget::text::text("00:00.00")
+                    .size(125)
                     .width(Length::Fill)
                     .align_x(Alignment::Center),
             ),
         );
-        page_content = page_content.push(Space::with_height(padding));
+        page_content = page_content.push(
+            widget::row().push(
+                widget::text::text(self.timer.status.to_string())
+                    .width(Length::Fill)
+                    .align_x(Alignment::Center),
+            ),
+        );
 
         // Combine all elements to finished page
         let page_container = container(page_content)
-            .max_width(600)
+            .max_width(700)
             .width(Length::Fill)
             .apply(container)
             .center_x(Length::Fill)
@@ -224,6 +241,10 @@ impl cosmic::Application for AppModel {
                     eprintln!("failed to open {url:?}: {err}");
                 }
             },
+
+            Message::Rescramble => {
+                self.current_scramble = Scramble::new();
+            }
         }
         Task::none()
     }
