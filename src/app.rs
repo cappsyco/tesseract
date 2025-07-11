@@ -2,12 +2,13 @@
 
 use crate::config::Config;
 use crate::fl;
+use crate::{scramble, timer};
 use cosmic::app::context_drawer;
 use cosmic::cosmic_config::{self, CosmicConfigEntry};
-use cosmic::iced::alignment::{Horizontal, Vertical};
 use cosmic::iced::{Alignment, Length, Subscription};
+use cosmic::iced_widget::scrollable;
 use cosmic::prelude::*;
-use cosmic::widget::{self, icon, menu, nav_bar};
+use cosmic::widget::{self, Space, container, icon, menu, nav_bar};
 use cosmic::{cosmic_theme, theme};
 use futures_util::SinkExt;
 use std::collections::HashMap;
@@ -15,43 +16,28 @@ use std::collections::HashMap;
 const REPOSITORY: &str = env!("CARGO_PKG_REPOSITORY");
 const APP_ICON: &[u8] = include_bytes!("../resources/icons/hicolor/scalable/apps/icon.svg");
 
-/// The application model stores app-specific state used to describe its interface and
-/// drive its logic.
 pub struct AppModel {
-    /// Application state which is managed by the COSMIC runtime.
     core: cosmic::Core,
-    /// Display a context drawer with the designated page if defined.
     context_page: ContextPage,
-    /// Contains items assigned to the nav bar panel.
     nav: nav_bar::Model,
-    /// Key bindings for the application's menu bar.
     key_binds: HashMap<menu::KeyBind, MenuAction>,
-    // Configuration data that persists between application runs.
     config: Config,
 }
 
-/// Messages emitted by the application and its widgets.
 #[derive(Debug, Clone)]
 pub enum Message {
     OpenRepositoryUrl,
-    SubscriptionChannel,
     ToggleContextPage(ContextPage),
+    SubscriptionChannel,
     UpdateConfig(Config),
     LaunchUrl(String),
 }
 
-/// Create a COSMIC application from the app model
 impl cosmic::Application for AppModel {
-    /// The async executor that will be used to run your application's commands.
     type Executor = cosmic::executor::Default;
-
-    /// Data that your application receives to its init method.
     type Flags = ();
-
-    /// Messages which the application and its widgets will emit.
     type Message = Message;
 
-    /// Unique identifier in RDNN (reverse domain name notation) format.
     const APP_ID: &'static str = "co.uk.cappsy.tesseract";
 
     fn core(&self) -> &cosmic::Core {
@@ -62,12 +48,10 @@ impl cosmic::Application for AppModel {
         &mut self.core
     }
 
-    /// Initializes the application with any given flags and startup commands.
     fn init(
         core: cosmic::Core,
         _flags: Self::Flags,
     ) -> (Self, Task<cosmic::Action<Self::Message>>) {
-        // Create a nav bar with three page items.
         let mut nav = nav_bar::Model::default();
 
         nav.insert()
@@ -86,34 +70,24 @@ impl cosmic::Application for AppModel {
             .data::<Page>(Page::Page3)
             .icon(icon::from_name("applications-games-symbolic"));
 
-        // Construct the app model with the runtime's core.
         let mut app = AppModel {
             core,
             context_page: ContextPage::default(),
             nav,
             key_binds: HashMap::new(),
-            // Optional configuration file for an application.
             config: cosmic_config::Config::new(Self::APP_ID, Config::VERSION)
                 .map(|context| match Config::get_entry(&context) {
                     Ok(config) => config,
-                    Err((_errors, config)) => {
-                        // for why in errors {
-                        //     tracing::error!(%why, "error loading app config");
-                        // }
-
-                        config
-                    }
+                    Err((_errors, config)) => config,
                 })
                 .unwrap_or_default(),
         };
 
-        // Create a startup command that sets the window title.
         let command = app.update_title();
 
         (app, command)
     }
 
-    /// Elements to pack at the start of the header bar.
     fn header_start(&self) -> Vec<Element<Self::Message>> {
         let menu_bar = menu::bar(vec![menu::Tree::with_children(
             menu::root(fl!("view")).apply(Element::from),
@@ -126,12 +100,12 @@ impl cosmic::Application for AppModel {
         vec![menu_bar.into()]
     }
 
-    /// Enables the COSMIC application to create a nav bar with this model.
+    /*
     fn nav_model(&self) -> Option<&nav_bar::Model> {
         Some(&self.nav)
     }
+    */
 
-    /// Display a context drawer if the context page is requested.
     fn context_drawer(&self) -> Option<context_drawer::ContextDrawer<Self::Message>> {
         if !self.core.window.show_context {
             return None;
@@ -146,30 +120,63 @@ impl cosmic::Application for AppModel {
         })
     }
 
-    /// Describes the interface based on the current state of the application model.
-    ///
-    /// Application events will be processed through the view. Any messages emitted by
-    /// events received by widgets will be passed to the update method.
     fn view(&self) -> Element<Self::Message> {
-        widget::text::title1(fl!("welcome"))
-            .apply(widget::container)
+        //  Get theme info
+        let theme = cosmic::theme::active();
+        let padding = if self.core.is_condensed() {
+            theme.cosmic().space_s()
+        } else {
+            theme.cosmic().space_l()
+        };
+
+        // Start container
+        let mut page_content = widget::column()
+            .padding(0.)
             .width(Length::Fill)
-            .height(Length::Fill)
-            .align_x(Horizontal::Center)
-            .align_y(Vertical::Center)
-            .into()
+            .align_x(Alignment::Start);
+
+        // Scramble
+        page_content = page_content.push(
+            widget::row().push(
+                widget::column().push(
+                    widget::text::text("D2 L2 R' U L2 R2 D' B' D B R' F2 A L' F' B2 L2 R D L")
+                        .size(35)
+                        .center()
+                        .width(Length::Fill),
+                ),
+            ),
+        );
+        page_content = page_content.push(Space::with_height(100));
+
+        // Timer
+        page_content = page_content.push(
+            widget::row().push(
+                widget::column()
+                    .push(widget::text::title1("00:00.00").size(110))
+                    .width(Length::Fill)
+                    .align_x(Alignment::Center),
+            ),
+        );
+        page_content = page_content.push(Space::with_height(padding));
+
+        // Combine all elements to finished page
+        let page_container = container(page_content)
+            .max_width(600)
+            .width(Length::Fill)
+            .apply(container)
+            .center_x(Length::Fill)
+            .padding([0, padding]);
+
+        // Display
+        let content: Element<_> = scrollable(page_container).into();
+
+        content
     }
 
-    /// Register subscriptions for this application.
-    ///
-    /// Subscriptions are long-running async tasks running in the background which
-    /// emit messages to the application through a channel. They are started at the
-    /// beginning of the application, and persist through its lifetime.
     fn subscription(&self) -> Subscription<Self::Message> {
         struct MySubscription;
 
         Subscription::batch(vec![
-            // Create a subscription which emits updates through a channel.
             Subscription::run_with_id(
                 std::any::TypeId::of::<MySubscription>(),
                 cosmic::iced::stream::channel(4, move |mut channel| async move {
@@ -178,23 +185,12 @@ impl cosmic::Application for AppModel {
                     futures_util::future::pending().await
                 }),
             ),
-            // Watch for application configuration changes.
             self.core()
                 .watch_config::<Config>(Self::APP_ID)
-                .map(|update| {
-                    // for why in update.errors {
-                    //     tracing::error!(?why, "app config error");
-                    // }
-
-                    Message::UpdateConfig(update.config)
-                }),
+                .map(|update| Message::UpdateConfig(update.config)),
         ])
     }
 
-    /// Handles messages emitted by the application and its widgets.
-    ///
-    /// Tasks may be returned for asynchronous execution of code in the background
-    /// on the application's async runtime.
     fn update(&mut self, message: Self::Message) -> Task<cosmic::Action<Self::Message>> {
         match message {
             Message::OpenRepositoryUrl => {
@@ -207,10 +203,8 @@ impl cosmic::Application for AppModel {
 
             Message::ToggleContextPage(context_page) => {
                 if self.context_page == context_page {
-                    // Close the context drawer if the toggled context page is the same.
                     self.core.window.show_context = !self.core.window.show_context;
                 } else {
-                    // Open the context drawer to display the requested context page.
                     self.context_page = context_page;
                     self.core.window.show_context = true;
                 }
@@ -230,24 +224,18 @@ impl cosmic::Application for AppModel {
         Task::none()
     }
 
-    /// Called when a nav item is selected.
     fn on_nav_select(&mut self, id: nav_bar::Id) -> Task<cosmic::Action<Self::Message>> {
-        // Activate the page in the model.
         self.nav.activate(id);
-
         self.update_title()
     }
 }
 
 impl AppModel {
-    /// The about page for this app.
     pub fn about(&self) -> Element<Message> {
         let cosmic_theme::Spacing { space_xxs, .. } = theme::active().cosmic().spacing;
 
         let icon = widget::svg(widget::svg::Handle::from_memory(APP_ICON));
-
         let title = widget::text::title3(fl!("app-title"));
-
         let hash = env!("VERGEN_GIT_SHA");
         let short_hash: String = hash.chars().take(7).collect();
         let date = env!("VERGEN_GIT_COMMIT_DATE");
@@ -274,7 +262,6 @@ impl AppModel {
             .into()
     }
 
-    /// Updates the header and window titles.
     pub fn update_title(&mut self) -> Task<cosmic::Action<Message>> {
         let mut window_title = fl!("app-title");
 
@@ -291,14 +278,12 @@ impl AppModel {
     }
 }
 
-/// The page to display in the application.
 pub enum Page {
     Page1,
     Page2,
     Page3,
 }
 
-/// The context page to display in the context drawer.
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
 pub enum ContextPage {
     #[default]
