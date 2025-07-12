@@ -2,16 +2,21 @@
 
 use crate::config::Config;
 use crate::fl;
-use crate::{scrambler::Scramble, timer::Timer};
+use crate::{
+    scrambler::Scramble,
+    timer::{Status, Timer},
+};
 use cosmic::app::context_drawer;
 use cosmic::cosmic_config::{self, CosmicConfigEntry};
-use cosmic::iced::{Alignment, Length, Subscription};
+use cosmic::iced::keyboard::key::Named;
+use cosmic::iced::time;
+use cosmic::iced::{Alignment, Length, Subscription, keyboard};
 use cosmic::iced_widget::scrollable;
 use cosmic::prelude::*;
 use cosmic::widget::{self, Space, container, icon, menu, nav_bar};
 use cosmic::{cosmic_theme, theme};
-use futures_util::SinkExt;
 use std::collections::HashMap;
+use std::time::Duration;
 
 const REPOSITORY: &str = env!("CARGO_PKG_REPOSITORY");
 const APP_ICON: &[u8] = include_bytes!("../resources/icons/hicolor/scalable/apps/icon.svg");
@@ -23,6 +28,7 @@ pub struct AppModel {
     key_binds: HashMap<menu::KeyBind, MenuAction>,
     config: Config,
 
+    space_pressed: bool,
     current_scramble: Scramble,
     timer: Timer,
 }
@@ -31,10 +37,13 @@ pub struct AppModel {
 pub enum Message {
     OpenRepositoryUrl,
     ToggleContextPage(ContextPage),
-    SubscriptionChannel,
     UpdateConfig(Config),
     LaunchUrl(String),
     Rescramble,
+    TimerTick,
+    SpacePressed,
+    SpaceReleased,
+    SpaceHeld,
 }
 
 impl cosmic::Application for AppModel {
@@ -88,6 +97,7 @@ impl cosmic::Application for AppModel {
 
             current_scramble: Scramble::new(),
             timer: Timer::default(),
+            space_pressed: false,
         };
 
         let command = app.update_title();
@@ -149,6 +159,7 @@ impl cosmic::Application for AppModel {
                     widget::button::icon(
                         widget::icon::from_name("view-refresh-symbolic").size(100),
                     )
+                    .icon_size(20)
                     .on_press(Message::Rescramble),
                 )
                 .width(Length::Fill)
@@ -157,7 +168,11 @@ impl cosmic::Application for AppModel {
         );
         page_content = page_content.push(
             widget::column()
-                .push(widget::text::text(self.current_scramble.moves.join("  ")).size(40))
+                .push(
+                    widget::text::text(self.current_scramble.moves.join("  "))
+                        .size(45)
+                        .color(color),
+                )
                 .align_x(Alignment::Center)
                 .width(Length::Fill),
         );
@@ -166,15 +181,8 @@ impl cosmic::Application for AppModel {
         page_content = page_content.push(Space::with_height(70));
         page_content = page_content.push(
             widget::row().push(
-                widget::text::text("00:00.00")
-                    .size(125)
-                    .width(Length::Fill)
-                    .align_x(Alignment::Center),
-            ),
-        );
-        page_content = page_content.push(
-            widget::row().push(
-                widget::text::text(self.timer.status.to_string())
+                widget::text::text(self.timer.display())
+                    .size(140)
                     .width(Length::Fill)
                     .align_x(Alignment::Center),
             ),
@@ -195,17 +203,32 @@ impl cosmic::Application for AppModel {
     }
 
     fn subscription(&self) -> Subscription<Self::Message> {
-        struct MySubscription;
+        fn handle_press(key: keyboard::Key, _modifiers: keyboard::Modifiers) -> Option<Message> {
+            match key.as_ref() {
+                keyboard::Key::Named(Named::Space) => Some(Message::SpacePressed),
+                _ => None,
+            }
+        }
+        fn handle_release(key: keyboard::Key, _modifiers: keyboard::Modifiers) -> Option<Message> {
+            match key.as_ref() {
+                keyboard::Key::Named(Named::Space) => Some(Message::SpaceReleased),
+                _ => None,
+            }
+        }
 
         Subscription::batch(vec![
-            Subscription::run_with_id(
-                std::any::TypeId::of::<MySubscription>(),
-                cosmic::iced::stream::channel(4, move |mut channel| async move {
-                    _ = channel.send(Message::SubscriptionChannel).await;
-
-                    futures_util::future::pending().await
-                }),
-            ),
+            keyboard::on_key_press(handle_press),
+            keyboard::on_key_release(handle_release),
+            match self.timer.status {
+                Status::Running => {
+                    time::every(Duration::from_millis(10)).map(|_| Message::TimerTick)
+                }
+                _ => Subscription::none(),
+            },
+            match self.space_pressed {
+                true => time::every(Duration::from_secs(1)).map(|_| Message::SpaceHeld),
+                _ => Subscription::none(),
+            },
             self.core()
                 .watch_config::<Config>(Self::APP_ID)
                 .map(|update| Message::UpdateConfig(update.config)),
@@ -216,10 +239,6 @@ impl cosmic::Application for AppModel {
         match message {
             Message::OpenRepositoryUrl => {
                 _ = open::that_detached(REPOSITORY);
-            }
-
-            Message::SubscriptionChannel => {
-                // For example purposes only.
             }
 
             Message::ToggleContextPage(context_page) => {
@@ -244,6 +263,36 @@ impl cosmic::Application for AppModel {
 
             Message::Rescramble => {
                 self.current_scramble = Scramble::new();
+            }
+
+            Message::TimerTick => {
+                self.timer.time += 10;
+            }
+
+            Message::SpacePressed => {
+                self.space_pressed = true;
+                if self.timer.status == Status::Running {
+                    self.timer.status = Status::Stopped;
+                    self.current_scramble = Scramble::new();
+                } else if self.timer.status == Status::Stopped {
+                    self.timer.status = Status::Hold;
+                }
+            }
+
+            Message::SpaceReleased => {
+                self.space_pressed = false;
+                if self.timer.status == Status::Ready {
+                    self.timer.time = 0;
+                    self.timer.status = Status::Running;
+                } else {
+                    self.timer.status = Status::Stopped;
+                }
+            }
+
+            Message::SpaceHeld => {
+                if self.timer.status == Status::Hold {
+                    self.timer.status = Status::Ready;
+                }
             }
         }
         Task::none()
