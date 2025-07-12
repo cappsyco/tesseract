@@ -13,7 +13,7 @@ use cosmic::iced::time;
 use cosmic::iced::{Alignment, Length, Subscription, keyboard};
 use cosmic::iced_widget::scrollable;
 use cosmic::prelude::*;
-use cosmic::widget::{self, Space, container, icon, menu, nav_bar};
+use cosmic::widget::{self, Space, container, menu, nav_bar};
 use cosmic::{cosmic_theme, theme};
 use std::collections::HashMap;
 use std::time::Duration;
@@ -27,7 +27,6 @@ pub struct AppModel {
     nav: nav_bar::Model,
     key_binds: HashMap<menu::KeyBind, MenuAction>,
     config: Config,
-
     space_pressed: bool,
     current_scramble: Scramble,
     timer: Timer,
@@ -65,23 +64,7 @@ impl cosmic::Application for AppModel {
         core: cosmic::Core,
         _flags: Self::Flags,
     ) -> (Self, Task<cosmic::Action<Self::Message>>) {
-        let mut nav = nav_bar::Model::default();
-
-        nav.insert()
-            .text(fl!("page-id", num = 1))
-            .data::<Page>(Page::Page1)
-            .icon(icon::from_name("applications-science-symbolic"))
-            .activate();
-
-        nav.insert()
-            .text(fl!("page-id", num = 2))
-            .data::<Page>(Page::Page2)
-            .icon(icon::from_name("applications-system-symbolic"));
-
-        nav.insert()
-            .text(fl!("page-id", num = 3))
-            .data::<Page>(Page::Page3)
-            .icon(icon::from_name("applications-games-symbolic"));
+        let nav = nav_bar::Model::default();
 
         let mut app = AppModel {
             core,
@@ -117,12 +100,6 @@ impl cosmic::Application for AppModel {
         vec![menu_bar.into()]
     }
 
-    /*
-    fn nav_model(&self) -> Option<&nav_bar::Model> {
-        Some(&self.nav)
-    }
-    */
-
     fn context_drawer(&self) -> Option<context_drawer::ContextDrawer<Self::Message>> {
         if !self.core.window.show_context {
             return None;
@@ -139,11 +116,11 @@ impl cosmic::Application for AppModel {
 
     fn view(&self) -> Element<Self::Message> {
         //  Get theme info
-        let theme = cosmic::theme::active();
+        let active_theme = cosmic::theme::active();
         let padding = if self.core.is_condensed() {
-            theme.cosmic().space_s()
+            active_theme.cosmic().space_s()
         } else {
-            theme.cosmic().space_l()
+            active_theme.cosmic().space_l()
         };
 
         // Start container
@@ -168,11 +145,7 @@ impl cosmic::Application for AppModel {
         );
         page_content = page_content.push(
             widget::column()
-                .push(
-                    widget::text::text(self.current_scramble.moves.join("  "))
-                        .size(45)
-                        .color(color),
-                )
+                .push(widget::text::text(self.current_scramble.display()).size(40))
                 .align_x(Alignment::Center)
                 .width(Length::Fill),
         );
@@ -350,12 +323,16 @@ impl AppModel {
             Task::none()
         }
     }
-}
 
-pub enum Page {
-    Page1,
-    Page2,
-    Page3,
+    /*
+    fn timer_style(&self) -> cosmic::iced_widget::text::Style {
+        let color = match self.timer.status {
+            Status::Hold => Color::from_rgb8(255, 0, 0),
+            _ => Color::from_rgb8(0, 255, 0),
+        };
+        cosmic::iced_widget::text::Style { color: Some(color) }
+    }
+    */
 }
 
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]

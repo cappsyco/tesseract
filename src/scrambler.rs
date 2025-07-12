@@ -38,6 +38,9 @@ impl Scramble {
 
         Self { moves }
     }
+    pub fn display(&self) -> String {
+        self.moves.join("  ")
+    }
 }
 
 fn generate_scramble() -> Vec<String> {
