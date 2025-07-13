@@ -11,7 +11,7 @@ use cosmic::cosmic_config::{self, CosmicConfigEntry};
 use cosmic::iced::keyboard::key::Named;
 use cosmic::iced::{Alignment, Length, Subscription, keyboard};
 use cosmic::iced::{Radius, time};
-use cosmic::iced_widget::{rule, scrollable, text};
+use cosmic::iced_widget::{rule, scrollable};
 use cosmic::prelude::*;
 use cosmic::widget::{self, Space, container, menu, nav_bar};
 use cosmic::{cosmic_theme, theme};
@@ -185,6 +185,17 @@ impl cosmic::Application for AppModel {
                     }
                 }),
             )),
+        );
+
+        // Info
+        page_content = page_content.push(Space::with_height(20));
+        page_content = page_content.push(
+            widget::column().push(
+                widget::text::text("Hold Space to start")
+                    .size(16)
+                    .width(Length::Fill)
+                    .align_x(Alignment::Center),
+            ),
         );
 
         // Combine all elements to finished page

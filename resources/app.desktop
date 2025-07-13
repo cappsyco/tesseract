@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Tesseract
-Comment=An application for the COSMIC™ desktop
+Comment=Speed cubing timer for the COSMIC™ desktop
 Type=Application
 Icon=co.uk.cappsy.tesseract
 Exec=tesseract %F
