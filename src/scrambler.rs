@@ -1,5 +1,6 @@
 use rand::rng;
 use rand::seq::IndexedRandom;
+use std::fmt;
 use strum::{EnumIter, IntoEnumIterator};
 
 #[derive(Debug, Clone, Copy, EnumIter)]
@@ -22,11 +23,6 @@ enum Move {
     R,
     R2,
     Rp,
-}
-impl std::fmt::Display for Move {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "{:?}", self)
-    }
 }
 
 #[derive(Debug, Clone)]

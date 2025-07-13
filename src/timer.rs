@@ -33,4 +33,7 @@ impl Timer {
             format!("{}.{:02}", seconds, millis)
         }
     }
+    pub fn start(&mut self) {
+        self.status = Status::Running;
+    }
 }

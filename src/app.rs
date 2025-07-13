@@ -286,10 +286,10 @@ impl cosmic::Application for AppModel {
                 self.current_scramble = Scramble::new();
             }
 
+            // TODO: make this cleaner. Move more logic into the timer module?
             Message::TimerTick => {
                 self.timer.time += 10;
             }
-
             Message::SpacePressed => {
                 self.space_pressed = true;
                 if self.timer.status == Status::Running {
@@ -301,7 +301,6 @@ impl cosmic::Application for AppModel {
                     self.timer.status = Status::Hold;
                 }
             }
-
             Message::SpaceReleased => {
                 self.space_pressed = false;
                 if self.timer.status == Status::Ready {
@@ -311,7 +310,6 @@ impl cosmic::Application for AppModel {
                     self.timer.status = Status::Stopped;
                 }
             }
-
             Message::SpaceHeld => {
                 if self.timer.status == Status::Hold {
                     self.timer.status = Status::Ready;
