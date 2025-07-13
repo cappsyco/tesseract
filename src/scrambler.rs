@@ -29,6 +29,7 @@ impl std::fmt::Display for Move {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct Scramble {
     pub moves: Vec<String>,
 }

@@ -2,6 +2,7 @@
 
 use crate::config::Config;
 use crate::fl;
+use crate::record::{Record, Solve};
 use crate::{
     scrambler::Scramble,
     timer::{Status, Timer},
@@ -11,9 +12,10 @@ use cosmic::cosmic_config::{self, CosmicConfigEntry};
 use cosmic::iced::keyboard::key::Named;
 use cosmic::iced::{Alignment, Length, Subscription, keyboard};
 use cosmic::iced::{Radius, time};
-use cosmic::iced_widget::{rule, scrollable};
+use cosmic::iced_widget::{Column, rule, scrollable};
 use cosmic::prelude::*;
-use cosmic::widget::{self, Space, container, menu, nav_bar};
+use cosmic::widget::settings::Section;
+use cosmic::widget::{self, Space, container, menu, nav_bar, settings};
 use cosmic::{cosmic_theme, theme};
 use std::collections::HashMap;
 use std::time::Duration;
@@ -30,6 +32,7 @@ pub struct AppModel {
     space_pressed: bool,
     current_scramble: Scramble,
     timer: Timer,
+    record: Record,
 }
 
 #[derive(Debug, Clone)]
@@ -81,6 +84,7 @@ impl cosmic::Application for AppModel {
             current_scramble: Scramble::new(),
             timer: Timer::default(),
             space_pressed: false,
+            record: Record::default(),
         };
 
         let command = app.update_title();
@@ -130,73 +134,80 @@ impl cosmic::Application for AppModel {
             .align_x(Alignment::Center);
 
         // Scramble
-        page_content = page_content.push(
-            widget::column()
-                .push(
-                    widget::button::icon(
-                        widget::icon::from_name("view-refresh-symbolic").size(100),
-                    )
+        page_content = page_content
+            .push(
+                widget::button::icon(widget::icon::from_name("view-refresh-symbolic").size(100))
                     .icon_size(20)
                     .on_press(Message::Rescramble),
-                )
-                .width(Length::Fill)
-                .align_x(Alignment::Center)
-                .padding(10),
-        );
-        page_content = page_content.push(
-            widget::column()
-                .push(widget::text::text(self.current_scramble.display()).size(40))
-                .align_x(Alignment::Center)
-                .width(Length::Fill),
-        );
+            )
+            .push(widget::text::text(self.current_scramble.display()).size(40))
+            .align_x(Alignment::Center)
+            .width(Length::Fill);
 
         // Timer
-        page_content = page_content.push(Space::with_height(70));
-        page_content = page_content.push(
-            widget::column().push(
+        let timer_status = self.timer.status.clone();
+        page_content = page_content
+            .push(Space::with_height(padding))
+            .push(widget::divider::horizontal::default())
+            .push(
                 widget::text::text(self.timer.display())
                     .size(140)
                     .width(Length::Fill)
                     .align_x(Alignment::Center),
-            ),
+            )
+            .push(
+                widget::divider::horizontal::heavy()
+                    .width(150)
+                    .class(theme::Rule::custom(move |theme| {
+                        let cosmic = theme.cosmic();
+                        let divider_color = match timer_status {
+                            Status::Hold => &cosmic.destructive_color(),
+                            Status::Ready => &cosmic.success_color(),
+                            _ => &cosmic.accent_text_color(),
+                        };
+
+                        rule::Style {
+                            color: cosmic::iced::Color::from_rgb(
+                                divider_color.red,
+                                divider_color.green,
+                                divider_color.blue,
+                            ),
+                            width: 15,
+                            radius: Radius::new(20),
+                            fill_mode: rule::FillMode::Full,
+                        }
+                    })),
+            );
+
+        // Hint
+        page_content = page_content.push(Space::with_height(padding)).push(
+            widget::text::text(fl!("hold-space-to-start"))
+                .size(16)
+                .width(Length::Fill)
+                .align_x(Alignment::Center),
         );
 
-        // Status line
-        let timer_status = self.timer.status.clone();
-        page_content = page_content.push(
-            widget::row().push(widget::divider::horizontal::heavy().width(150).class(
-                theme::Rule::custom(move |theme| {
-                    let cosmic = theme.cosmic();
-                    let divider_color = match timer_status {
-                        Status::Hold => &cosmic.destructive_color(),
-                        Status::Ready => &cosmic.success_color(),
-                        _ => &cosmic.accent_text_color(),
-                    };
-
-                    rule::Style {
-                        color: cosmic::iced::Color::from_rgb(
-                            divider_color.red,
-                            divider_color.green,
-                            divider_color.blue,
+        // Record
+        if !self.record.solves.is_empty() {
+            let mut solve_list = settings::section().title(fl!("your-solving-record"));
+            for solve in &self.record.solves {
+                solve_list = solve_list.add(
+                    widget::row()
+                        .push(
+                            widget::text::body(format!("{}", solve.scramble.display()))
+                                .width(Length::Fill),
+                        )
+                        .push(
+                            widget::text::body(format!("{}ms", solve.time))
+                                .width(Length::Fill)
+                                .align_x(Alignment::End),
                         ),
-                        width: 15,
-                        radius: Radius::new(20),
-                        fill_mode: rule::FillMode::Full,
-                    }
-                }),
-            )),
-        );
-
-        // Info
-        page_content = page_content.push(Space::with_height(20));
-        page_content = page_content.push(
-            widget::column().push(
-                widget::text::text("Hold Space to start")
-                    .size(16)
-                    .width(Length::Fill)
-                    .align_x(Alignment::Center),
-            ),
-        );
+                );
+            }
+            page_content = page_content
+                .push(Space::with_height(padding))
+                .push(solve_list);
+        }
 
         // Combine all elements to finished page
         let page_container = container(page_content)
@@ -204,7 +215,7 @@ impl cosmic::Application for AppModel {
             .width(Length::Fill)
             .apply(container)
             .center_x(Length::Fill)
-            .padding([0, padding]);
+            .padding(padding);
 
         // Display
         let content: Element<_> = scrollable(page_container).into();
@@ -236,7 +247,7 @@ impl cosmic::Application for AppModel {
                 _ => Subscription::none(),
             },
             match self.space_pressed {
-                true => time::every(Duration::from_secs(1)).map(|_| Message::SpaceHeld),
+                true => time::every(Duration::from_millis(600)).map(|_| Message::SpaceHeld),
                 _ => Subscription::none(),
             },
             self.core()
@@ -283,6 +294,8 @@ impl cosmic::Application for AppModel {
                 self.space_pressed = true;
                 if self.timer.status == Status::Running {
                     self.timer.status = Status::Stopped;
+                    let solve = Solve::new(self.timer.time, &self.current_scramble);
+                    self.record.add_solve(solve);
                     self.current_scramble = Scramble::new();
                 } else if self.timer.status == Status::Stopped {
                     self.timer.status = Status::Hold;
