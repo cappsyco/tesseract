@@ -9,9 +9,9 @@ use crate::{
 use cosmic::app::context_drawer;
 use cosmic::cosmic_config::{self, CosmicConfigEntry};
 use cosmic::iced::keyboard::key::Named;
-use cosmic::iced::time;
 use cosmic::iced::{Alignment, Length, Subscription, keyboard};
-use cosmic::iced_widget::scrollable;
+use cosmic::iced::{Radius, time};
+use cosmic::iced_widget::{rule, scrollable, text};
 use cosmic::prelude::*;
 use cosmic::widget::{self, Space, container, menu, nav_bar};
 use cosmic::{cosmic_theme, theme};
@@ -153,12 +153,38 @@ impl cosmic::Application for AppModel {
         // Timer
         page_content = page_content.push(Space::with_height(70));
         page_content = page_content.push(
-            widget::row().push(
+            widget::column().push(
                 widget::text::text(self.timer.display())
                     .size(140)
                     .width(Length::Fill)
                     .align_x(Alignment::Center),
             ),
+        );
+
+        // Status line
+        let timer_status = self.timer.status.clone();
+        page_content = page_content.push(
+            widget::row().push(widget::divider::horizontal::heavy().width(150).class(
+                theme::Rule::custom(move |theme| {
+                    let cosmic = theme.cosmic();
+                    let divider_color = match timer_status {
+                        Status::Hold => &cosmic.destructive_color(),
+                        Status::Ready => &cosmic.success_color(),
+                        _ => &cosmic.accent_text_color(),
+                    };
+
+                    rule::Style {
+                        color: cosmic::iced::Color::from_rgb(
+                            divider_color.red,
+                            divider_color.green,
+                            divider_color.blue,
+                        ),
+                        width: 15,
+                        radius: Radius::new(20),
+                        fill_mode: rule::FillMode::Full,
+                    }
+                }),
+            )),
         );
 
         // Combine all elements to finished page
