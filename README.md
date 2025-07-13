@@ -1,6 +1,6 @@
 # Tesseract
 
-Measure your speed cubing in the fourth dimension.
+Four dimensional speed cubing.
 
 ### Current state
 
