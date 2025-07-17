@@ -14,7 +14,6 @@ use cosmic::iced::{Alignment, Length, Subscription, keyboard};
 use cosmic::iced::{Radius, time};
 use cosmic::iced_widget::{Column, rule, scrollable};
 use cosmic::prelude::*;
-use cosmic::widget::settings::Section;
 use cosmic::widget::{self, Space, container, menu, nav_bar, settings};
 use cosmic::{cosmic_theme, theme};
 use std::collections::HashMap;
