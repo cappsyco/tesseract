@@ -12,6 +12,7 @@ use cosmic::cosmic_config::{self, CosmicConfigEntry};
 use cosmic::iced::keyboard::key::Named;
 use cosmic::iced::{Alignment, Length, Subscription, keyboard};
 use cosmic::iced::{Radius, time};
+use cosmic::iced_core::text::LineHeight;
 use cosmic::iced_widget::{Column, rule, scrollable};
 use cosmic::prelude::*;
 use cosmic::widget::{self, Space, container, menu, nav_bar, settings};
@@ -180,10 +181,13 @@ impl cosmic::Application for AppModel {
 
         // Hint
         page_content = page_content.push(Space::with_height(padding)).push(
-            widget::text::text(fl!("hold-space-to-start"))
-                .size(16)
-                .width(Length::Fill)
-                .align_x(Alignment::Center),
+            widget::text::text(match self.timer.status {
+                Status::Running => fl!("tap-space-to-stop"),
+                _ => fl!("hold-space-to-start"),
+            })
+            .size(16)
+            .width(Length::Fill)
+            .align_x(Alignment::Center),
         );
 
         // Record
@@ -194,12 +198,16 @@ impl cosmic::Application for AppModel {
                     widget::row()
                         .push(
                             widget::text::body(format!("{}", solve.scramble.display()))
+                                .size(16)
                                 .width(Length::Fill),
                         )
                         .push(
-                            widget::text::body(format!("{}ms", solve.time))
+                            widget::text::body(format!("{}", solve.time()))
+                                .size(21)
                                 .width(Length::Fill)
-                                .align_x(Alignment::End),
+                                .line_height(LineHeight::Relative(2.0))
+                                .align_x(Alignment::End)
+                                .align_y(Alignment::Center),
                         ),
                 );
             }
