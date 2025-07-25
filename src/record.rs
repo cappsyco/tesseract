@@ -37,23 +37,21 @@ impl Record {
     pub fn add_solve(&mut self, solve: Solve) {
         self.solves.splice(0..0, vec![solve]);
 
-        // calculate AO5
-        if self.solves.len() >= 5 {
-            let last_five: &[Solve] = &self.solves[0..5];
-            let mut sum = 0;
-            for solve in last_five {
-                sum += solve.time;
-            }
-            self.ao5 = Some(sum / 5);
+        // Recalculate averages
+        self.ao5 = calc_average(&self.solves, 5);
+        self.ao12 = calc_average(&self.solves, 12);
+    }
+}
+
+fn calc_average(solves: &Vec<Solve>, ao: usize) -> Option<u64> {
+    if solves.len() >= ao {
+        let last_n: &[Solve] = &solves[0..ao];
+        let mut sum = 0;
+        for solve in last_n {
+            sum += solve.time;
         }
-        // calculate AO12
-        if self.solves.len() >= 12 {
-            let last_twelve: &[Solve] = &self.solves[0..12];
-            let mut sum = 0;
-            for solve in last_twelve {
-                sum += solve.time;
-            }
-            self.ao12 = Some(sum / 12);
-        }
+        Some(sum / 12)
+    } else {
+        None
     }
 }

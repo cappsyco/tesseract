@@ -5,7 +5,7 @@ use crate::fl;
 use crate::record::{Record, Solve};
 use crate::{
     scrambler::Scramble,
-    timer::{Status, Timer},
+    timer::{Status, Timer, format_from_ms},
 };
 use cosmic::app::context_drawer;
 use cosmic::cosmic_config::{self, CosmicConfigEntry};
@@ -13,7 +13,7 @@ use cosmic::iced::keyboard::key::Named;
 use cosmic::iced::{Alignment, Length, Subscription, keyboard};
 use cosmic::iced::{Radius, time};
 use cosmic::iced_core::text::LineHeight;
-use cosmic::iced_widget::{Column, rule, scrollable};
+use cosmic::iced_widget::{rule, scrollable};
 use cosmic::prelude::*;
 use cosmic::widget::{self, Space, container, menu, nav_bar, settings};
 use cosmic::{cosmic_theme, theme};
@@ -163,7 +163,7 @@ impl cosmic::Application for AppModel {
                         let divider_color = match timer_status {
                             Status::Hold => &cosmic.destructive_color(),
                             Status::Ready => &cosmic.success_color(),
-                            _ => &cosmic.accent_text_color(),
+                            _ => &cosmic.primary_component_color(),
                         };
 
                         rule::Style {
@@ -188,6 +188,19 @@ impl cosmic::Application for AppModel {
             .size(16)
             .width(Length::Fill)
             .align_x(Alignment::Center),
+        );
+
+        // Averages
+        page_content = page_content.push(
+            widget::row()
+                .push(widget::text::text(match self.record.ao5 {
+                    Some(ms) => format_from_ms(ms),
+                    None => "N/A".to_string(),
+                }))
+                .push(widget::text::text(match self.record.ao12 {
+                    Some(ms) => format_from_ms(ms),
+                    None => "N/A".to_string(),
+                })),
         );
 
         // Record
