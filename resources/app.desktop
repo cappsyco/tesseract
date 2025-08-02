@@ -2,7 +2,7 @@
 Name=Tesseract
 Comment=Speed cubing timer for the COSMIC™ desktop
 Type=Application
-Icon=co.uk.cappsy.tesseract
+Icon=co.uk.cappsy.Tesseract
 Exec=tesseract %F
 Terminal=false
 StartupNotify=true

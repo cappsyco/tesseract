@@ -1,27 +1,32 @@
 name := 'tesseract'
-appid := 'co.uk.cappsy.tesseract'
+appid := 'co.uk.cappsy.Tesseract'
 
 rootdir := ''
 prefix := '/usr'
+flatpak-prefix := '/app'
 
 base-dir := absolute_path(clean(rootdir / prefix))
+flatpak-base-dir := absolute_path(clean(rootdir / flatpak-prefix))
 
 bin-src := 'target' / 'release' / name
 bin-dst := base-dir / 'bin' / name
+flatpak-bin-dst := flatpak-base-dir / 'bin' / name
 
 desktop := appid + '.desktop'
 desktop-src := 'resources' / desktop
 desktop-dst := clean(rootdir / prefix) / 'share' / 'applications' / desktop
+flatpak-desktop-dst := clean(rootdir / flatpak-prefix) / 'share' / 'applications' / desktop
 
 appdata := appid + '.metainfo.xml'
 appdata-src := 'resources' / appdata
 appdata-dst := clean(rootdir / prefix) / 'share' / 'appdata' / appdata
+flatpak-metainfo-dst := clean(rootdir / flatpak-prefix) / 'share' / 'metainfo' / appdata
 
 icons-src := 'resources' / 'icons' / 'hicolor'
 icons-dst := clean(rootdir / prefix) / 'share' / 'icons' / 'hicolor'
-
 icon-svg-src := icons-src / 'scalable' / 'apps' / 'icon.svg'
 icon-svg-dst := icons-dst / 'scalable' / 'apps' / appid + '.svg'
+flatpak-icon-dst := clean(rootdir / flatpak-prefix) / 'share' / 'icons' / 'hicolor' / 'scalable' / 'apps' / appid + '.svg'
 
 # Default recipe which runs `just build-release`
 default: build-release
@@ -69,6 +74,27 @@ install:
 uninstall:
     rm {{bin-dst}} {{desktop-dst}} {{icon-svg-dst}}
 
+# Build flatpak locally
+flatpak-builder:
+    flatpak-builder \
+        --force-clean \
+        --verbose \
+        --ccache \
+        --user \
+        --install \
+        --install-deps-from=flathub \
+        --repo=repo \
+        flatpak-out \
+        co.uk.cappsy.Tesseract.json
+
+# Update flatpak cargo-sources.json
+flatpak-cargo-sources:
+    python3 ./flatpak/flatpak-cargo-generator.py ./Cargo.lock -o ./flatpak/cargo-sources.json
+
+# Generate cargo-sources.json file for Flatpak
+flatpak-cargo-generator:
+    python3 ./aux/fcg.py Cargo.lock -o cargo-sources.json
+
 # Vendor dependencies locally
 vendor:
     #!/usr/bin/env bash
@@ -93,4 +119,3 @@ vendor:
 vendor-extract:
     rm -rf vendor
     tar pxf vendor.tar
-

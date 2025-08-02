@@ -53,7 +53,7 @@ impl cosmic::Application for AppModel {
     type Flags = ();
     type Message = Message;
 
-    const APP_ID: &'static str = "co.uk.cappsy.tesseract";
+    const APP_ID: &'static str = "co.uk.cappsy.Tesseract";
 
     fn core(&self) -> &cosmic::Core {
         &self.core
@@ -185,38 +185,65 @@ impl cosmic::Application for AppModel {
                 Status::Running => fl!("tap-space-to-stop"),
                 _ => fl!("hold-space-to-start"),
             })
-            .size(16)
+            .size(15)
             .width(Length::Fill)
             .align_x(Alignment::Center),
-        );
-
-        // Averages
-        page_content = page_content.push(
-            widget::row()
-                .push(widget::text::text(match self.record.ao5 {
-                    Some(ms) => format_from_ms(ms),
-                    None => "N/A".to_string(),
-                }))
-                .push(widget::text::text(match self.record.ao12 {
-                    Some(ms) => format_from_ms(ms),
-                    None => "N/A".to_string(),
-                })),
         );
 
         // Record
         if !self.record.solves.is_empty() {
             let mut solve_list = settings::section().title(fl!("your-solving-record"));
+            let ao5_label: String = String::from("AO5: ");
+            let ao12_label: String = String::from("AO12: ");
+            let ao100_label: String = String::from("AO100: ");
+            let ao5_time = match self.record.ao5 {
+                Some(ms) => format_from_ms(ms),
+                None => String::from("N/A"),
+            };
+            let ao12_time = match self.record.ao12 {
+                Some(ms) => format_from_ms(ms),
+                None => String::from("N/A"),
+            };
+            let ao100_time = match self.record.ao100 {
+                Some(ms) => format_from_ms(ms),
+                None => String::from("N/A"),
+            };
+
+            // Averages
+            solve_list = solve_list.add(
+                widget::row()
+                    .push(
+                        widget::text::title4(ao5_label + &ao5_time)
+                            .size(15)
+                            .width(Length::Fill)
+                            .align_x(Alignment::Center),
+                    )
+                    .push(
+                        widget::text::title4(ao12_label + &ao12_time)
+                            .size(15)
+                            .width(Length::Fill)
+                            .align_x(Alignment::Center),
+                    )
+                    .push(
+                        widget::text::title4(ao100_label + &ao100_time)
+                            .size(15)
+                            .width(Length::Fill)
+                            .align_x(Alignment::Center),
+                    ),
+            );
+
+            // Solves
             for solve in &self.record.solves {
                 solve_list = solve_list.add(
                     widget::row()
                         .push(
                             widget::text::body(format!("{}", solve.scramble.display()))
-                                .size(16)
+                                .size(15)
                                 .width(Length::Fill),
                         )
                         .push(
                             widget::text::body(format!("{}", solve.time()))
-                                .size(21)
+                                .size(18)
                                 .width(Length::Fill)
                                 .line_height(LineHeight::Relative(2.0))
                                 .align_x(Alignment::End)
@@ -306,7 +333,7 @@ impl cosmic::Application for AppModel {
                 self.current_scramble = Scramble::new();
             }
 
-            // TODO: make this cleaner. Move more logic into the timer module?
+            // TODO: make this cleaner. Move more logic into the timer module
             Message::TimerTick => {
                 self.timer.time += 10;
             }
@@ -391,16 +418,6 @@ impl AppModel {
             Task::none()
         }
     }
-
-    /*
-    fn timer_style(&self) -> cosmic::iced_widget::text::Style {
-        let color = match self.timer.status {
-            Status::Hold => Color::from_rgb8(255, 0, 0),
-            _ => Color::from_rgb8(0, 255, 0),
-        };
-        cosmic::iced_widget::text::Style { color: Some(color) }
-    }
-    */
 }
 
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
