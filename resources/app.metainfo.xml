@@ -3,8 +3,26 @@
   <id>co.uk.cappsy.Tesseract</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0</project_license>
+  <project_group>COSMIC</project_group>
+  <developer id="co.uk.cappsy">
+    <name>Jonathan Capps</name>
+  </developer>
+  <developer_name>Jonathan Capps</developer_name>
+  <update_contact>cappsy@gmail.com</update_contact>
+  <url type="homepage">https://github.com/cappsyco/tesseract</url>
+  <url type="bugtracker">
+    https://github.com/cappsyco/tesseract/issues</url>
+  <url type="contribute">
+    https://github.com/cappsyco/tesseract
+  </url>
+  <content_rating type="oars-1.1" />
   <name>Tesseract</name>
-  <summary>Speed cubing timer for the COSMIC™ desktop</summary>
+  <summary>Four dimensional speed cubing.</summary>
+  <description>
+    <p>
+      Speed cubing timer for the COSMIC™ desktop.
+    </p>
+  </description>
   <icon type="stock">co.uk.cappsy.Tesseract.svg</icon>
   <url type="vcs-browser">https://github.com/cappsyco/tesseract</url>
   <launchable type="desktop-id">co.uk.cappsy.Tesseract.desktop</launchable>
@@ -28,5 +46,4 @@
   <keywords>
     <keyword>COSMIC</keyword>
   </keywords>
-  <content_rating type="oars-1.1" />
 </component>
