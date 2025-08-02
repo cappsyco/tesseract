@@ -15,7 +15,7 @@ We're still very early in the life of this app, so features are thin on the grou
 In order of priority:
 
 - Solving record to persist (currently it will clear once the application is closed)
-- Organise your solving into sessions
+- Expanding the above to allow organising your solving into separate sessions
 - Support for WCA puzzles other than 3x3
 - UI enhancements (e.g. scramble visualisation)
 
