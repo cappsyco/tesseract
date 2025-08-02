@@ -1,5 +1,5 @@
 name := 'tesseract'
-appid := 'co.uk.cappsy.Tesseract'
+appid := 'uk.co.cappsy.Tesseract'
 
 rootdir := ''
 prefix := '/usr'
@@ -85,7 +85,7 @@ flatpak-builder:
         --install-deps-from=flathub \
         --repo=repo \
         flatpak-out \
-        co.uk.cappsy.Tesseract.json
+        uk.co.cappsy.Tesseract.json
 
 # Update flatpak cargo-sources.json
 flatpak-cargo-sources:

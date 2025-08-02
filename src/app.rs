@@ -53,7 +53,7 @@ impl cosmic::Application for AppModel {
     type Flags = ();
     type Message = Message;
 
-    const APP_ID: &'static str = "co.uk.cappsy.Tesseract";
+    const APP_ID: &'static str = "uk.co.cappsy.Tesseract";
 
     fn core(&self) -> &cosmic::Core {
         &self.core

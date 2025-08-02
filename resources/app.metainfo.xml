@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <component type="desktop-application">
-  <id>co.uk.cappsy.Tesseract</id>
+  <id>uk.co.cappsy.Tesseract</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0</project_license>
   <project_group>COSMIC</project_group>
@@ -23,11 +23,11 @@
       Speed cubing timer for the COSMIC™ desktop.
     </p>
   </description>
-  <icon type="stock">co.uk.cappsy.Tesseract.svg</icon>
+  <icon type="stock">uk.co.cappsy.Tesseract.svg</icon>
   <url type="vcs-browser">https://github.com/cappsyco/tesseract</url>
-  <launchable type="desktop-id">co.uk.cappsy.Tesseract.desktop</launchable>
+  <launchable type="desktop-id">uk.co.cappsy.Tesseract.desktop</launchable>
   <provides>
-    <id>co.uk.cappsy.Tesseract</id>
+    <id>uk.co.cappsy.Tesseract</id>
     <binaries>
       <binary>tesseract</binary>
     </binaries>

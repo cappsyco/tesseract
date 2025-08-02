@@ -1,5 +1,5 @@
 {
-  "id": "co.uk.cappsy.Tesseract",
+  "id": "uk.co.cappsy.Tesseract",
   "runtime": "org.freedesktop.Platform",
   "runtime-version": "24.08",
   "sdk": "org.freedesktop.Sdk",
@@ -13,12 +13,10 @@
     "--socket=wayland",
     "--socket=fallback-x11",
     "--device=all",
-    "--talk-name=com.system76.CosmicSettingsDaemon",
-    "--filesystem=xdg-config/cosmic:rw"
+    "--talk-name=com.system76.CosmicSettingsDaemon"
   ],
   "build-options": {
     "append-path": "/usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/llvm20/bin",
-    "build-args": ["--share=network"],
     "env": {
       "CARGO_HOME": "/run/build/tesseract/cargo",
       "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER": "clang",
@@ -35,9 +33,9 @@
         "cargo --offline fetch --manifest-path Cargo.toml --verbose",
         "cargo --offline build --release --verbose",
         "install -Dm755 ./target/release/tesseract -t /app/bin",
-        "install -Dm644 ./resources/app.desktop /app/share/applications/co.uk.cappsy.Tesseract.desktop",
-        "install -Dm644 ./resources/app.metainfo.xml /app/share/metainfo/co.uk.cappsy.Tesseract.metainfo.xml",
-        "install -Dm644 ./resources/icons/hicolor/scalable/apps/icon.svg /app/share/icons/hicolor/scalable/apps/co.uk.cappsy.Tesseract.svg"
+        "install -Dm644 ./resources/app.desktop /app/share/applications/uk.co.cappsy.Tesseract.desktop",
+        "install -Dm644 ./resources/app.metainfo.xml /app/share/metainfo/uk.co.cappsy.Tesseract.metainfo.xml",
+        "install -Dm644 ./resources/icons/hicolor/scalable/apps/icon.svg /app/share/icons/hicolor/scalable/apps/uk.co.cappsy.Tesseract.svg"
       ],
       "sources": [
         {
