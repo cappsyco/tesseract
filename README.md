@@ -1,6 +1,8 @@
 # Tesseract
 
-Four dimensional speed cubing.
+A speed cubing timer for the COSMIC™ desktop.
+
+![A view of the Tesseract speed cubing app.](https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screenshot.png)
 
 ### Current state
 
