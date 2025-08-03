@@ -7,7 +7,6 @@
   <developer id="co.uk.cappsy">
     <name>Jonathan Capps</name>
   </developer>
-  <developer_name>Jonathan Capps</developer_name>
   <update_contact>cappsy@gmail.com</update_contact>
   <url type="homepage">https://github.com/cappsyco/tesseract</url>
   <url type="bugtracker">
@@ -17,11 +16,16 @@
   </url>
   <content_rating type="oars-1.1" />
   <name>Tesseract</name>
-  <summary>Four dimensional speed cubing.</summary>
+  <summary>Cubing in the fourth dimension</summary>
   <description>
     <p>
-      Speed cubing timer for the COSMIC™ desktop.
+      A speed cubing timer, built with libcosmic and designed for simple but effective solve timing.
     </p>
+    <ul>
+        <li>Generate WCA compliant scrambles</li>
+        <li>Time your solves with a Stackmat style timer</li>
+        <li>Keep track of your times and averages</li>
+    </ul>
   </description>
   <icon type="stock">uk.co.cappsy.Tesseract.svg</icon>
   <screenshots>
@@ -34,10 +38,7 @@
   <url type="vcs-browser">https://github.com/cappsyco/tesseract</url>
   <launchable type="desktop-id">uk.co.cappsy.Tesseract.desktop</launchable>
   <provides>
-    <id>uk.co.cappsy.Tesseract</id>
-    <binaries>
-      <binary>tesseract</binary>
-    </binaries>
+    <id>com.system76.CosmicApplication</id>
   </provides>
   <requires>
     <display_length compare="ge">360</display_length>
