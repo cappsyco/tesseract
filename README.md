@@ -23,7 +23,7 @@ In order of priority:
 
 ### Flathub
 
-Coming soon to Flathub!
+[![Get it on Flathub](https://flathub.org/api/badge?locale=en)](https://flathub.org/apps/uk.co.cappsy.Tesseract)
 
 ### Build & Install
 
