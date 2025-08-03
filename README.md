@@ -2,7 +2,7 @@
 
 A speed cubing timer for the COSMIC™ desktop.
 
-![A view of the Tesseract speed cubing app.](https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screenshot.png)
+[![Get it on Flathub](https://flathub.org/api/badge?locale=en)](https://flathub.org/apps/uk.co.cappsy.Tesseract)
 
 ### Current state
 
@@ -20,10 +20,6 @@ In order of priority:
 - Expanding the above to allow organising your solving into separate sessions
 - Support for WCA puzzles other than 3x3
 - UI enhancements (e.g. scramble visualisation)
-
-### Flathub
-
-Coming soon to Flathub!
 
 ### Build & Install
 
