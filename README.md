@@ -4,7 +4,7 @@ A speed cubing timer for the COSMIC™ desktop.
 
 [![Get it on Flathub](https://flathub.org/api/badge?locale=en)](https://flathub.org/apps/uk.co.cappsy.Tesseract)
 
-![A view of the Tesseract speed cubing app.](https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screenshot.png){width=400)
+![A view of the Tesseract speed cubing app.](https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screenshot.png){width=400}
 
 ### Current state
 
