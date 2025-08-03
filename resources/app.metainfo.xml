@@ -54,4 +54,18 @@
   <keywords>
     <keyword>COSMIC</keyword>
   </keywords>
+  <releases>
+    <release version="0.1.0" date="2025-08-03">
+      <description>
+        <p>Initial release</p>
+        <ul>
+          <li>Generate 3x3 scrambles</li>
+          <li>Time your solves</li>
+          <li>
+            View your solving record and AO5, 12 and 100 from that session
+          </li>
+        </ul>
+      </description>
+    </release>
+  </releases>
 </component>
