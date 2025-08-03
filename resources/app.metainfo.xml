@@ -32,7 +32,7 @@
       <screenshot type="default">
         <image
             >https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screenshot.png</image>
-        <caption>Color schemes page with light mode</caption>
+        <caption>Main app view with scramble, timer and solve record</caption>
       </screenshot>
   </screenshots>
   <url type="vcs-browser">https://github.com/cappsyco/tesseract</url>
