@@ -24,6 +24,13 @@
     </p>
   </description>
   <icon type="stock">uk.co.cappsy.Tesseract.svg</icon>
+  <screenshots>
+      <screenshot type="default">
+        <image
+            >https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screenshot.png</image>
+        <caption>Color schemes page with light mode</caption>
+      </screenshot>
+  </screenshots>
   <url type="vcs-browser">https://github.com/cappsyco/tesseract</url>
   <launchable type="desktop-id">uk.co.cappsy.Tesseract.desktop</launchable>
   <provides>
