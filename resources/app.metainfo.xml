@@ -30,7 +30,7 @@
   <icon type="stock">uk.co.cappsy.Tesseract.svg</icon>
   <branding>
     <color type="primary" scheme_preference="light">#e8e0d0</color>
-    <color type="primary" scheme_preference="dark">#666699</color>
+    <color type="primary" scheme_preference="dark">#595988</color>
   </branding>
   <screenshots>
       <screenshot type="default">
