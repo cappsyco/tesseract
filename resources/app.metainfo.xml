@@ -33,7 +33,7 @@
     <color type="primary" scheme_preference="dark">#595988</color>
   </branding>
   <screenshots>
-      <screenshot type="default">
+      <screenshot type="default" xml:lang="en">
         <image>https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screenshot.png</image>
         <caption>Main app view with scramble, timer and solve record</caption>
       </screenshot>
