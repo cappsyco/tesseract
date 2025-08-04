@@ -28,10 +28,13 @@
     </ul>
   </description>
   <icon type="stock">uk.co.cappsy.Tesseract.svg</icon>
+  <branding>
+    <color type="primary" scheme_preference="light">#e8e0d0</color>
+    <color type="primary" scheme_preference="dark">#666699</color>
+  </branding>
   <screenshots>
       <screenshot type="default">
-        <image
-            >https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screenshot.png</image>
+        <image>https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screenshot.png</image>
         <caption>Main app view with scramble, timer and solve record</caption>
       </screenshot>
   </screenshots>

@@ -5,17 +5,17 @@ use crate::fl;
 use crate::record::{Record, Solve};
 use crate::{
     scrambler::Scramble,
-    timer::{Status, Timer, format_from_ms},
+    timer::{format_from_ms, Status, Timer},
 };
 use cosmic::app::context_drawer;
 use cosmic::cosmic_config::{self, CosmicConfigEntry};
 use cosmic::iced::keyboard::key::Named;
-use cosmic::iced::{Alignment, Length, Subscription, keyboard};
-use cosmic::iced::{Radius, time};
+use cosmic::iced::{keyboard, Alignment, Length, Subscription};
+use cosmic::iced::{time, Radius};
 use cosmic::iced_core::text::LineHeight;
 use cosmic::iced_widget::{rule, scrollable};
 use cosmic::prelude::*;
-use cosmic::widget::{self, Space, container, menu, nav_bar, settings};
+use cosmic::widget::{self, container, menu, nav_bar, settings, Space};
 use cosmic::{cosmic_theme, theme};
 use std::collections::HashMap;
 use std::time::Duration;
@@ -137,7 +137,7 @@ impl cosmic::Application for AppModel {
         page_content = page_content
             .push(
                 widget::button::icon(widget::icon::from_name("view-refresh-symbolic").size(100))
-                    .icon_size(20)
+                    .icon_size(40)
                     .on_press(Message::Rescramble),
             )
             .push(widget::text::text(self.current_scramble.display()).size(40))
