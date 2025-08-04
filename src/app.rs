@@ -137,7 +137,7 @@ impl cosmic::Application for AppModel {
         page_content = page_content
             .push(
                 widget::button::icon(widget::icon::from_name("view-refresh-symbolic").size(100))
-                    .icon_size(40)
+                    .icon_size(20)
                     .on_press(Message::Rescramble),
             )
             .push(widget::text::text(self.current_scramble.display()).size(40))
