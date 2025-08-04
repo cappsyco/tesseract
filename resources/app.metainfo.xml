@@ -34,7 +34,7 @@
   </branding>
   <screenshots>
       <screenshot type="default" xml:lang="en">
-        <image>https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screen_dark.png</image>
+        <image>https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screenshots/screen_dark.png</image>
         <caption>Main app view with scramble, timer and solve record (default COSMIC dark mode)</caption>
       </screenshot>
       <screenshot type="light" xml:lang="en">
