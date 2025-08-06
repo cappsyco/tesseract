@@ -294,7 +294,7 @@ impl cosmic::Application for AppModel {
                 _ => Subscription::none(),
             },
             match self.space_pressed {
-                true => time::every(Duration::from_millis(600)).map(|_| Message::SpaceHeld),
+                true => time::every(Duration::from_millis(500)).map(|_| Message::SpaceHeld),
                 _ => Subscription::none(),
             },
             self.core()
