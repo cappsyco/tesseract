@@ -6,3 +6,4 @@ tap-space-to-stop = Tap Space to stop
 page-id = Page { $num }
 git-description = Git commit {$hash} on {$date}
 your-solving-record = Your solving record
+repository = Respository
