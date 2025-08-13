@@ -41,7 +41,6 @@ pub struct AppModel {
 pub enum Message {
     ToggleContextPage(ContextPage),
     UpdateConfig(Config),
-    LaunchUrl(String),
     Rescramble,
     TimerTick,
     SpacePressed,
@@ -328,13 +327,6 @@ impl cosmic::Application for AppModel {
             Message::UpdateConfig(config) => {
                 self.config = config;
             }
-
-            Message::LaunchUrl(url) => match open::that_detached(&url) {
-                Ok(()) => {}
-                Err(err) => {
-                    eprintln!("failed to open {url:?}: {err}");
-                }
-            },
 
             Message::Rescramble => {
                 self.current_scramble = Scramble::new();
