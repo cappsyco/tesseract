@@ -2083,6 +2083,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dfa686283ad6dd069f105e5ab091b04c62850d3e4cf5d67debad1933f55023df"
 
 [[package]]
+name = "hrsw"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "15e4753d8a72070265df14196f6a8de6c7c4e3e8022da34ba539ca93d64ff7fe"
+
+[[package]]
 name = "i18n-config"
 version = "0.4.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4773,6 +4779,7 @@ name = "tesseract"
 version = "0.1.0"
 dependencies = [
  "futures-util",
+ "hrsw",
  "i18n-embed",
  "i18n-embed-fl",
  "libcosmic",
