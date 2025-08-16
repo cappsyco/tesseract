@@ -414,7 +414,7 @@ pub fn build_about() -> About {
         .developers([("Jonathan Capps", "cappsy@gmail.com")])
         .version(env!("CARGO_PKG_VERSION"))
         .name(fl!("app-title"))
-        //.icon(APP_ID)
+        .icon(widget::icon::from_svg_bytes(APP_ICON))
         .license(env!("CARGO_PKG_LICENSE"))
         .author("Jonathan Capps")
         .links([(fl!("repository"), env!("CARGO_PKG_REPOSITORY"))])
