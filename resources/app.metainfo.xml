@@ -62,9 +62,14 @@
     <keyword>COSMIC</keyword>
   </keywords>
   <releases>
-    <release version="0.1.0" date="2025-08-03">
+    <release version="0.1.1" date="2025-08-18">
       <description>
-        <p>Initial release</p>
+        <p><strong>0.1.1</strong></p>
+        <ul>
+            <li>Improved CPU usage when timer is running</li>
+            <li>Minor tweaks and bug fixes</li>
+        </ul>
+        <p><strong>0.1.0</strong></p>
         <ul>
           <li>Generate 3x3 scrambles</li>
           <li>Time your solves</li>
