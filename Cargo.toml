@@ -18,6 +18,7 @@ rand = "0.9.1"
 rust-embed = "8.5.0"
 strum = { version = "0.21", features = ["derive"] }
 tokio = { version = "1.41.0", features = ["full"] }
+hrsw = "0.1.2"
 tracing = { version = "0.1.37", features = ["log"] }
 
 [dependencies.i18n-embed]

@@ -22,7 +22,11 @@ impl Timer {
         }
     }
     pub fn display(&self) -> String {
-        format_from_ms(self.time)
+        let mut displayed_time = format_from_ms(self.time);
+        if self.status == Status::Running {
+            displayed_time.pop();
+        }
+        displayed_time
     }
     pub fn _start(&mut self) {
         self.status = Status::Running;

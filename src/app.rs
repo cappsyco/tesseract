@@ -16,7 +16,8 @@ use cosmic::iced::{Radius, time};
 use cosmic::iced_core::text::LineHeight;
 use cosmic::iced_widget::{rule, scrollable};
 use cosmic::prelude::*;
-use cosmic::theme;
+use cosmic::{cosmic_theme, theme};
+use hrsw::Stopwatch;
 use cosmic::widget::{self, Space, about, about::About, container, menu, nav_bar, settings};
 use std::collections::HashMap;
 use std::time::Duration;
@@ -34,6 +35,7 @@ pub struct AppModel {
     current_scramble: Scramble,
     timer: Timer,
     record: Record,
+    stopwatch: Stopwatch,
     about_page: About,
 }
 
@@ -86,6 +88,7 @@ impl cosmic::Application for AppModel {
             timer: Timer::default(),
             space_pressed: false,
             record: Record::default(),
+            stopwatch: Stopwatch::new(),
             about_page: build_about(),
         };
 
@@ -203,15 +206,15 @@ impl cosmic::Application for AppModel {
             let ao100_label: String = String::from("AO100: ");
             let ao5_time = match self.record.ao5 {
                 Some(ms) => format_from_ms(ms),
-                None => String::from("N/A"),
+                _ => String::from("N/A"),
             };
             let ao12_time = match self.record.ao12 {
                 Some(ms) => format_from_ms(ms),
-                None => String::from("N/A"),
+                _ => String::from("N/A"),
             };
             let ao100_time = match self.record.ao100 {
                 Some(ms) => format_from_ms(ms),
-                None => String::from("N/A"),
+                _ => String::from("N/A"),
             };
 
             // Averages
@@ -294,12 +297,12 @@ impl cosmic::Application for AppModel {
             keyboard::on_key_release(handle_release),
             match self.timer.status {
                 Status::Running => {
-                    time::every(Duration::from_millis(10)).map(|_| Message::TimerTick)
+                    time::every(Duration::from_millis(100)).map(|_| Message::TimerTick)
                 }
                 _ => Subscription::none(),
             },
             match self.space_pressed {
-                true => time::every(Duration::from_millis(600)).map(|_| Message::SpaceHeld),
+                true => time::every(Duration::from_millis(500)).map(|_| Message::SpaceHeld),
                 _ => Subscription::none(),
             },
             self.core()
@@ -332,17 +335,18 @@ impl cosmic::Application for AppModel {
                 self.current_scramble = Scramble::new();
             }
 
-            // TODO: make this cleaner. Move more logic into the timer module
+            // TODO: make this all cleaner. Move more logic into the timer module
             Message::TimerTick => {
-                self.timer.time += 10;
+                self.timer.time = self.stopwatch.elapsed().as_millis() as u64;
             }
             Message::SpacePressed => {
                 self.space_pressed = true;
                 if self.timer.status == Status::Running {
-                    self.timer.status = Status::Stopped;
+                    self.timer.time = self.stopwatch.elapsed().as_millis() as u64;
                     let solve = Solve::new(self.timer.time, &self.current_scramble);
-                    self.record.add_solve(solve);
+                    self.timer.status = Status::Stopped;
                     self.current_scramble = Scramble::new();
+                    self.record.add_solve(solve);
                 } else if self.timer.status == Status::Stopped {
                     self.timer.status = Status::Hold;
                 }
@@ -351,9 +355,11 @@ impl cosmic::Application for AppModel {
                 self.space_pressed = false;
                 if self.timer.status == Status::Ready {
                     self.timer.time = 0;
+                    self.stopwatch.reset_and_start();
                     self.timer.status = Status::Running;
                 } else {
                     self.timer.status = Status::Stopped;
+                    self.stopwatch.stop();
                 }
             }
             Message::SpaceHeld => {
