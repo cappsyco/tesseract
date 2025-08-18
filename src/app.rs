@@ -292,14 +292,12 @@ impl cosmic::Application for AppModel {
         Subscription::batch(vec![
             keyboard::on_key_press(handle_press),
             keyboard::on_key_release(handle_release),
-            /*
             match self.timer.status {
                 Status::Running => {
-                    time::every(Duration::from_millis(10)).map(|_| Message::TimerTick)
+                    time::every(Duration::from_millis(100)).map(|_| Message::TimerTick)
                 }
                 _ => Subscription::none(),
             },
-            */
             match self.space_pressed {
                 true => time::every(Duration::from_millis(500)).map(|_| Message::SpaceHeld),
                 _ => Subscription::none(),
@@ -340,7 +338,7 @@ impl cosmic::Application for AppModel {
                 self.current_scramble = Scramble::new();
             }
 
-            // TODO: make this cleaner. Move more logic into the timer module
+            // TODO: make this all cleaner. Move more logic into the timer module
             Message::TimerTick => {
                 self.timer.time = self.stopwatch.elapsed().as_millis() as u64;
             }
