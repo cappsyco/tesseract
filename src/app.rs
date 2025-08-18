@@ -8,6 +8,7 @@ use crate::{
     timer::{Status, Timer, format_from_ms},
 };
 use cosmic::app::context_drawer;
+use cosmic::app::context_drawer::ContextDrawer;
 use cosmic::cosmic_config::{self, CosmicConfigEntry};
 use cosmic::iced::keyboard::key::Named;
 use cosmic::iced::{Alignment, Length, Subscription, keyboard};
@@ -15,13 +16,13 @@ use cosmic::iced::{Radius, time};
 use cosmic::iced_core::text::LineHeight;
 use cosmic::iced_widget::{rule, scrollable};
 use cosmic::prelude::*;
-use cosmic::widget::{self, Space, container, menu, nav_bar, settings};
 use cosmic::{cosmic_theme, theme};
 use hrsw::Stopwatch;
+use cosmic::widget::{self, Space, about, about::About, container, menu, nav_bar, settings};
 use std::collections::HashMap;
 use std::time::Duration;
+use tracing;
 
-const REPOSITORY: &str = env!("CARGO_PKG_REPOSITORY");
 const APP_ICON: &[u8] = include_bytes!("../resources/icons/hicolor/scalable/apps/icon.svg");
 
 pub struct AppModel {
@@ -34,21 +35,20 @@ pub struct AppModel {
     current_scramble: Scramble,
     timer: Timer,
     record: Record,
-
     stopwatch: Stopwatch,
+    about_page: About,
 }
 
 #[derive(Debug, Clone)]
 pub enum Message {
-    OpenRepositoryUrl,
     ToggleContextPage(ContextPage),
     UpdateConfig(Config),
-    LaunchUrl(String),
     Rescramble,
     TimerTick,
     SpacePressed,
     SpaceReleased,
     SpaceHeld,
+    OpenUrl(String),
 }
 
 impl cosmic::Application for AppModel {
@@ -88,8 +88,8 @@ impl cosmic::Application for AppModel {
             timer: Timer::default(),
             space_pressed: false,
             record: Record::default(),
-
             stopwatch: Stopwatch::new(),
+            about_page: build_about(),
         };
 
         let command = app.update_title();
@@ -97,7 +97,7 @@ impl cosmic::Application for AppModel {
         (app, command)
     }
 
-    fn header_start(&self) -> Vec<Element<Self::Message>> {
+    fn header_start(&self) -> Vec<Element<'_, Self::Message>> {
         let menu_bar = menu::bar(vec![menu::Tree::with_children(
             menu::root(fl!("view")).apply(Element::from),
             menu::items(
@@ -109,21 +109,24 @@ impl cosmic::Application for AppModel {
         vec![menu_bar.into()]
     }
 
-    fn context_drawer(&self) -> Option<context_drawer::ContextDrawer<Self::Message>> {
+    fn context_drawer(&self) -> Option<context_drawer::ContextDrawer<'_, Self::Message>> {
         if !self.core.window.show_context {
             return None;
         }
 
-        Some(match self.context_page {
-            ContextPage::About => context_drawer::context_drawer(
-                self.about(),
-                Message::ToggleContextPage(ContextPage::About),
-            )
-            .title(fl!("about")),
-        })
+        match self.context_page {
+            ContextPage::About => Some(ContextDrawer {
+                title: Some("About".into()),
+                content: about(&self.about_page, Message::OpenUrl),
+                on_close: Message::ToggleContextPage(ContextPage::About),
+                header: None,
+                header_actions: Vec::new(),
+                footer: None,
+            }),
+        }
     }
 
-    fn view(&self) -> Element<Self::Message> {
+    fn view(&self) -> Element<'_, Self::Message> {
         //  Get theme info
         let active_theme = cosmic::theme::active();
         let padding = if self.core.is_condensed() {
@@ -310,9 +313,10 @@ impl cosmic::Application for AppModel {
 
     fn update(&mut self, message: Self::Message) -> Task<cosmic::Action<Self::Message>> {
         match message {
-            Message::OpenRepositoryUrl => {
-                _ = open::that_detached(REPOSITORY);
-            }
+            Message::OpenUrl(url) => match open::that_detached(url) {
+                Ok(_) => (),
+                Err(err) => tracing::error!("Failed to open URL: {err}"),
+            },
 
             Message::ToggleContextPage(context_page) => {
                 if self.context_page == context_page {
@@ -326,13 +330,6 @@ impl cosmic::Application for AppModel {
             Message::UpdateConfig(config) => {
                 self.config = config;
             }
-
-            Message::LaunchUrl(url) => match open::that_detached(&url) {
-                Ok(()) => {}
-                Err(err) => {
-                    eprintln!("failed to open {url:?}: {err}");
-                }
-            },
 
             Message::Rescramble => {
                 self.current_scramble = Scramble::new();
@@ -381,37 +378,6 @@ impl cosmic::Application for AppModel {
 }
 
 impl AppModel {
-    pub fn about(&self) -> Element<Message> {
-        let cosmic_theme::Spacing { space_xxs, .. } = theme::active().cosmic().spacing;
-
-        let icon = widget::svg(widget::svg::Handle::from_memory(APP_ICON));
-        let title = widget::text::title3(fl!("app-title"));
-        let hash = env!("VERGEN_GIT_SHA");
-        let short_hash: String = hash.chars().take(7).collect();
-        let date = env!("VERGEN_GIT_COMMIT_DATE");
-
-        let link = widget::button::link(REPOSITORY)
-            .on_press(Message::OpenRepositoryUrl)
-            .padding(0);
-
-        widget::column()
-            .push(icon)
-            .push(title)
-            .push(link)
-            .push(
-                widget::button::link(fl!(
-                    "git-description",
-                    hash = short_hash.as_str(),
-                    date = date
-                ))
-                .on_press(Message::LaunchUrl(format!("{REPOSITORY}/commits/{hash}")))
-                .padding(0),
-            )
-            .align_x(Alignment::Center)
-            .spacing(space_xxs)
-            .into()
-    }
-
     pub fn update_title(&mut self) -> Task<cosmic::Action<Message>> {
         let mut window_title = fl!("app-title");
 
@@ -447,4 +413,15 @@ impl menu::action::MenuAction for MenuAction {
             MenuAction::About => Message::ToggleContextPage(ContextPage::About),
         }
     }
+}
+
+pub fn build_about() -> About {
+    About::default()
+        .developers([("Jonathan Capps", "cappsy@gmail.com")])
+        .version(env!("CARGO_PKG_VERSION"))
+        .name(fl!("app-title"))
+        .icon(widget::icon::from_svg_bytes(APP_ICON))
+        .license(env!("CARGO_PKG_LICENSE"))
+        .author("Jonathan Capps")
+        .links([(fl!("repository"), env!("CARGO_PKG_REPOSITORY"))])
 }
