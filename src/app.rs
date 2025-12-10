@@ -117,10 +117,10 @@ impl cosmic::Application for AppModel {
         match self.context_page {
             ContextPage::About => Some(ContextDrawer {
                 title: Some("About".into()),
-                content: about(&self.about_page, Message::OpenUrl),
+                content: about(&self.about_page, |s| Message::OpenUrl(s.to_string())),
                 on_close: Message::ToggleContextPage(ContextPage::About),
                 header: None,
-                header_actions: Vec::new(),
+                actions: None,
                 footer: None,
             }),
         }
@@ -313,7 +313,7 @@ impl cosmic::Application for AppModel {
 
     fn update(&mut self, message: Self::Message) -> Task<cosmic::Action<Self::Message>> {
         match message {
-            Message::OpenUrl(url) => match open::that_detached(url) {
+            Message::OpenUrl(url) => match open::that_detached(&url) {
                 Ok(_) => (),
                 Err(err) => tracing::error!("Failed to open URL: {err}"),
             },
