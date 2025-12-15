@@ -1,6 +1,6 @@
 [package]
 name = "tesseract"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 license = "GPL-3.0"
 description = "A speed cubing timer for the COSMIC™ desktop."
@@ -20,6 +20,7 @@ strum = { version = "0.21", features = ["derive"] }
 tokio = { version = "1.41.0", features = ["full"] }
 hrsw = "0.1.2"
 tracing = { version = "0.1.37", features = ["log"] }
+cube_scrambler = "0.2.1"
 
 [dependencies.i18n-embed]
 version = "0.15"

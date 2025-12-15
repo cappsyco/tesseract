@@ -3,10 +3,7 @@
 use crate::config::Config;
 use crate::fl;
 use crate::record::{Record, Solve};
-use crate::{
-    scrambler::Scramble,
-    timer::{Status, Timer, format_from_ms},
-};
+use crate::timer::{Status, Timer, format_from_ms};
 use cosmic::app::context_drawer;
 use cosmic::app::context_drawer::ContextDrawer;
 use cosmic::cosmic_config::{self, CosmicConfigEntry};
@@ -18,6 +15,7 @@ use cosmic::iced_widget::{rule, scrollable};
 use cosmic::prelude::*;
 use cosmic::theme;
 use cosmic::widget::{self, Space, about, about::About, container, menu, nav_bar, settings};
+use cube_scrambler::generate_scramble;
 use hrsw::Stopwatch;
 use std::collections::HashMap;
 use std::time::Duration;
@@ -32,7 +30,7 @@ pub struct AppModel {
     key_binds: HashMap<menu::KeyBind, MenuAction>,
     config: Config,
     space_pressed: bool,
-    current_scramble: Scramble,
+    current_scramble: Vec<String>,
     timer: Timer,
     record: Record,
     stopwatch: Stopwatch,
@@ -84,7 +82,8 @@ impl cosmic::Application for AppModel {
                 })
                 .unwrap_or_default(),
 
-            current_scramble: Scramble::new(),
+            current_scramble: generate_scramble(None, Some(String::from("3x3")))
+                .unwrap_or_default(),
             timer: Timer::default(),
             space_pressed: false,
             record: Record::default(),
@@ -148,7 +147,7 @@ impl cosmic::Application for AppModel {
                     .icon_size(20)
                     .on_press(Message::Rescramble),
             )
-            .push(widget::text::text(self.current_scramble.display()).size(40))
+            .push(widget::text::text(self.current_scramble.join(" ")).size(40))
             .align_x(Alignment::Center)
             .width(Length::Fill);
 
@@ -245,7 +244,7 @@ impl cosmic::Application for AppModel {
                 solve_list = solve_list.add(
                     widget::row()
                         .push(
-                            widget::text::body(format!("{}", solve.scramble.display()))
+                            widget::text::body(format!("{}", solve.scramble.join(" ")))
                                 .size(15)
                                 .width(Length::Fill),
                         )
@@ -332,7 +331,8 @@ impl cosmic::Application for AppModel {
             }
 
             Message::Rescramble => {
-                self.current_scramble = Scramble::new();
+                self.current_scramble =
+                    generate_scramble(None, Some(String::from("3x3"))).unwrap_or_default();
             }
 
             // TODO: make this all cleaner. Move more logic into the timer module
@@ -345,7 +345,8 @@ impl cosmic::Application for AppModel {
                     self.timer.time = self.stopwatch.elapsed().as_millis() as u64;
                     let solve = Solve::new(self.timer.time, &self.current_scramble);
                     self.timer.status = Status::Stopped;
-                    self.current_scramble = Scramble::new();
+                    self.current_scramble =
+                        generate_scramble(None, Some(String::from("3x3"))).unwrap_or_default();
                     self.record.add_solve(solve);
                 } else if self.timer.status == Status::Stopped {
                     self.timer.status = Status::Hold;

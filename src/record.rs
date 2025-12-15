@@ -1,14 +1,13 @@
-use crate::scrambler::Scramble;
 use crate::timer;
 
 pub struct Solve {
     pub time: u64,
-    pub scramble: Scramble,
+    pub scramble: Vec<String>,
     pub _dnf: bool,
     pub _plus_two: bool,
 }
 impl Solve {
-    pub fn new(time: u64, scramble: &Scramble) -> Solve {
+    pub fn new(time: u64, scramble: &Vec<String>) -> Solve {
         Self {
             time,
             scramble: scramble.clone(),
