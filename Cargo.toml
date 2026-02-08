@@ -1,28 +1,27 @@
 [package]
 name = "tesseract"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 license = "GPL-3.0"
 description = "A speed cubing timer for the COSMIC™ desktop."
 repository = "https://github.com/cappsyco/tesseract"
 authors = ["Jonathan Capps", "Jonathan Capps <cappsy@gmail.com>"]
 
-[build-dependencies]
-vergen = { version = "8", features = ["git", "gitcl"] }
-
 [dependencies]
 futures-util = "0.3.31"
-i18n-embed-fl = "0.9.2"
-open = "5.3.0"
-rand = "0.9.1"
-rust-embed = "8.5.0"
-strum = { version = "0.21", features = ["derive"] }
-tokio = { version = "1.41.0", features = ["full"] }
+i18n-embed-fl = "0.10.0"
+open = "5.3.3"
+rand = "0.10.0"
+rust-embed = "8.11.0"
+strum = { version = "0.27.2", features = ["derive"] }
+tokio = { version = "1.49.0", features = ["full"] }
 hrsw = "0.1.2"
-tracing = { version = "0.1.37", features = ["log"] }
+tracing = { version = "0.1.44", features = ["log"] }
+cube_scrambler = "0.2.1"
+serde = "1.0.228"
 
 [dependencies.i18n-embed]
-version = "0.15"
+version = "0.16.0"
 features = ["fluent-system", "desktop-requester"]
 
 [dependencies.libcosmic]

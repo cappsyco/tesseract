@@ -1,23 +1,21 @@
 // SPDX-License-Identifier: GPL-3.0
 
-use crate::config::Config;
 use crate::fl;
-use crate::record::{Record, Solve};
-use crate::{
-    scrambler::Scramble,
-    timer::{Status, Timer, format_from_ms},
-};
+use crate::record::{Cube, Record, Solve};
+use crate::timer::{Status, Timer, format_from_ms};
 use cosmic::app::context_drawer;
 use cosmic::app::context_drawer::ContextDrawer;
-use cosmic::cosmic_config::{self, CosmicConfigEntry};
+use cosmic::cosmic_config::{Config, ConfigGet, ConfigSet};
 use cosmic::iced::keyboard::key::Named;
 use cosmic::iced::{Alignment, Length, Subscription, keyboard};
 use cosmic::iced::{Radius, time};
-use cosmic::iced_core::text::LineHeight;
 use cosmic::iced_widget::{rule, scrollable};
 use cosmic::prelude::*;
 use cosmic::theme;
-use cosmic::widget::{self, Space, about, about::About, container, menu, nav_bar, settings};
+use cosmic::widget::{
+    self, Space, about, about::About, container, dropdown, menu, nav_bar, settings,
+};
+use cube_scrambler::generate_scramble;
 use hrsw::Stopwatch;
 use std::collections::HashMap;
 use std::time::Duration;
@@ -32,7 +30,10 @@ pub struct AppModel {
     key_binds: HashMap<menu::KeyBind, MenuAction>,
     config: Config,
     space_pressed: bool,
-    current_scramble: Scramble,
+    current_cube: Cube,
+    cube_options: Vec<Cube>,
+    cube_options_labels: Vec<String>,
+    current_scramble: Vec<String>,
     timer: Timer,
     record: Record,
     stopwatch: Stopwatch,
@@ -42,13 +43,13 @@ pub struct AppModel {
 #[derive(Debug, Clone)]
 pub enum Message {
     ToggleContextPage(ContextPage),
-    UpdateConfig(Config),
     Rescramble,
     TimerTick,
     SpacePressed,
     SpaceReleased,
     SpaceHeld,
     OpenUrl(String),
+    CubeUpdate(usize),
 }
 
 impl cosmic::Application for AppModel {
@@ -71,23 +72,39 @@ impl cosmic::Application for AppModel {
         _flags: Self::Flags,
     ) -> (Self, Task<cosmic::Action<Self::Message>>) {
         let nav = nav_bar::Model::default();
+        let config = cosmic::cosmic_config::Config::new(Self::APP_ID, 1).unwrap();
+
+        // cube values
+        let current_cube = config.get::<Cube>("current_cube").unwrap_or_default();
+        let cube_options = vec![
+            Cube::Two,
+            Cube::Three,
+            Cube::Four,
+            Cube::Five,
+            Cube::Six,
+            Cube::Seven,
+        ];
+        let cube_options_labels: Vec<String> = cube_options.iter().map(|t| t.as_string()).collect();
+
+        // load record for selected cube
+        let record = config
+            .get::<Record>(current_cube.config_key())
+            .unwrap_or_default();
 
         let mut app = AppModel {
             core,
             context_page: ContextPage::default(),
             nav,
             key_binds: HashMap::new(),
-            config: cosmic_config::Config::new(Self::APP_ID, Config::VERSION)
-                .map(|context| match Config::get_entry(&context) {
-                    Ok(config) => config,
-                    Err((_errors, config)) => config,
-                })
+            config,
+            current_cube: current_cube.clone(),
+            cube_options,
+            cube_options_labels,
+            current_scramble: generate_scramble(None, Some(current_cube.as_string()))
                 .unwrap_or_default(),
-
-            current_scramble: Scramble::new(),
             timer: Timer::default(),
             space_pressed: false,
-            record: Record::default(),
+            record,
             stopwatch: Stopwatch::new(),
             about_page: build_about(),
         };
@@ -141,16 +158,35 @@ impl cosmic::Application for AppModel {
             .width(Length::Fill)
             .align_x(Alignment::Center);
 
-        // Scramble
+        // Cube header
+        // TODO: Make this fancier. Maybe an icon and integration with the picker
+        page_content = page_content.push(widget::text::title1(self.current_cube.as_string()));
+
+        // Cube picker
+        let selected_cube = self
+            .cube_options
+            .iter()
+            .position(|r| *r == self.current_cube)
+            .unwrap_or(1);
+
         page_content = page_content
             .push(
-                widget::button::icon(widget::icon::from_name("view-refresh-symbolic").size(100))
-                    .icon_size(20)
-                    .on_press(Message::Rescramble),
+                widget::row()
+                    .push(dropdown(
+                        &self.cube_options_labels,
+                        Some(selected_cube),
+                        move |value| Message::CubeUpdate(value),
+                    ))
+                    .push(
+                        widget::button::icon(
+                            widget::icon::from_name("view-refresh-symbolic").size(100),
+                        )
+                        .on_press(Message::Rescramble),
+                    ),
             )
-            .push(widget::text::text(self.current_scramble.display()).size(40))
-            .align_x(Alignment::Center)
-            .width(Length::Fill);
+            .push(container(
+                widget::text::text(self.current_scramble.join(" ")).size(28),
+            ));
 
         // Timer
         let timer_status = self.timer.status.clone();
@@ -193,14 +229,15 @@ impl cosmic::Application for AppModel {
                 Status::Running => fl!("tap-space-to-stop"),
                 _ => fl!("hold-space-to-start"),
             })
-            .size(15)
+            .size(16)
             .width(Length::Fill)
             .align_x(Alignment::Center),
         );
 
         // Record
         if !self.record.solves.is_empty() {
-            let mut solve_list = settings::section().title(fl!("your-solving-record"));
+
+            let mut solve_list = settings::section();
             let ao5_label: String = String::from("AO5: ");
             let ao12_label: String = String::from("AO12: ");
             let ao100_label: String = String::from("AO100: ");
@@ -245,17 +282,16 @@ impl cosmic::Application for AppModel {
                 solve_list = solve_list.add(
                     widget::row()
                         .push(
-                            widget::text::body(format!("{}", solve.scramble.display()))
+                            container(widget::text::body(format!("{}", solve.scramble.join(" ")))
                                 .size(15)
-                                .width(Length::Fill),
+                                .width(Length::Fill)).padding(active_theme.cosmic().space_s())
+                                .align_y(Alignment::Center),
                         )
                         .push(
+                            container(
                             widget::text::body(format!("{}", solve.time()))
-                                .size(18)
-                                .width(Length::Fill)
-                                .line_height(LineHeight::Relative(2.0))
-                                .align_x(Alignment::End)
-                                .align_y(Alignment::Center),
+                                .size(22)
+                                .align_x(Alignment::End)).padding(active_theme.cosmic().space_s())
                         ),
                 );
             }
@@ -305,9 +341,6 @@ impl cosmic::Application for AppModel {
                 true => time::every(Duration::from_millis(500)).map(|_| Message::SpaceHeld),
                 _ => Subscription::none(),
             },
-            self.core()
-                .watch_config::<Config>(Self::APP_ID)
-                .map(|update| Message::UpdateConfig(update.config)),
         ])
     }
 
@@ -327,15 +360,7 @@ impl cosmic::Application for AppModel {
                 }
             }
 
-            Message::UpdateConfig(config) => {
-                self.config = config;
-            }
-
-            Message::Rescramble => {
-                self.current_scramble = Scramble::new();
-            }
-
-            // TODO: make this all cleaner. Move more logic into the timer module
+            // TODO: refactor all this
             Message::TimerTick => {
                 self.timer.time = self.stopwatch.elapsed().as_millis() as u64;
             }
@@ -345,8 +370,9 @@ impl cosmic::Application for AppModel {
                     self.timer.time = self.stopwatch.elapsed().as_millis() as u64;
                     let solve = Solve::new(self.timer.time, &self.current_scramble);
                     self.timer.status = Status::Stopped;
-                    self.current_scramble = Scramble::new();
                     self.record.add_solve(solve);
+                    self.save_record();
+                    self.rescramble();
                 } else if self.timer.status == Status::Stopped {
                     self.timer.status = Status::Hold;
                 }
@@ -366,6 +392,18 @@ impl cosmic::Application for AppModel {
                 if self.timer.status == Status::Hold {
                     self.timer.status = Status::Ready;
                 }
+            }
+            Message::CubeUpdate(uid) => {
+                self.current_cube = self.cube_options[uid].clone();
+                self.record = self
+                    .config
+                    .get::<Record>(self.current_cube.config_key())
+                    .unwrap_or_default();
+                let _ = self.config.set("current_cube", &self.current_cube);
+                self.rescramble();
+            }
+            Message::Rescramble => {
+                self.rescramble();
             }
         }
         Task::none()
@@ -391,6 +429,18 @@ impl AppModel {
         } else {
             Task::none()
         }
+    }
+
+    fn rescramble(&mut self) {
+        self.current_scramble =
+            generate_scramble(None, Some(self.current_cube.as_string().clone()))
+                .unwrap_or_default();
+    }
+
+    fn save_record(&mut self) {
+        let _ = self
+            .config
+            .set(self.current_cube.config_key(), &self.record);
     }
 }
 
