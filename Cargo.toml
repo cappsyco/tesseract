@@ -11,7 +11,7 @@ authors = ["Jonathan Capps", "Jonathan Capps <cappsy@gmail.com>"]
 futures-util = "0.3.31"
 i18n-embed-fl = "0.10.0"
 open = "5.3.3"
-rand = "0.10.0-rc.9"
+rand = "0.10.0"
 rust-embed = "8.11.0"
 strum = { version = "0.27.2", features = ["derive"] }
 tokio = { version = "1.49.0", features = ["full"] }
