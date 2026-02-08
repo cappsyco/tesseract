@@ -17,6 +17,7 @@ We're still early in the life of this app, so features are a bit thin on the gro
 
 In order of priority:
 
+- Additional stats in your solving record, such as all time best single and average times
 - Allow organising your solving into separate sessions
 - Support for WCA puzzles other than the standard cubes
 - UI enhancements (e.g. scramble visualisation)
