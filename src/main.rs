@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 mod app;
-mod config;
 mod i18n;
 mod record;
 mod timer;

@@ -1,5 +1,43 @@
+use crate::fl;
 use crate::timer;
+use cosmic::cosmic_config::{self, CosmicConfigEntry, cosmic_config_derive::CosmicConfigEntry};
+use serde::{Deserialize, Serialize};
 
+#[derive(Debug, PartialEq, Eq, Clone, Default, Serialize, Deserialize)]
+pub enum Cube {
+    Two,
+    #[default]
+    Three,
+    Four,
+    Five,
+    Six,
+    Seven,
+    // TODO: add all the other WCA events
+}
+impl Cube {
+    pub fn as_string(&self) -> String {
+        match self {
+            Cube::Two => fl!("cube_two"),
+            Cube::Three => fl!("cube_three"),
+            Cube::Four => fl!("cube_four"),
+            Cube::Five => fl!("cube_five"),
+            Cube::Six => fl!("cube_six"),
+            Cube::Seven => fl!("cube_seven"),
+        }
+    }
+    pub fn config_key(&self) -> &str {
+        match self {
+            Cube::Two => "record_two",
+            Cube::Three => "record_three",
+            Cube::Four => "record_four",
+            Cube::Five => "record_five",
+            Cube::Six => "record_six",
+            Cube::Seven => "record_seven",
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct Solve {
     pub time: u64,
     pub scramble: Vec<String>,
@@ -20,8 +58,11 @@ impl Solve {
     }
 }
 
+#[derive(Debug, Default, Clone, CosmicConfigEntry, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Record {
+    pub cube: Cube,
     pub solves: Vec<Solve>,
+    pub best_solve: Option<Solve>,
     pub ao5: Option<u64>,
     pub ao12: Option<u64>,
     pub ao100: Option<u64>,
@@ -29,7 +70,9 @@ pub struct Record {
 impl Record {
     pub fn default() -> Record {
         Record {
+            cube: Cube::Three,
             solves: vec![],
+            best_solve: None,
             ao5: None,
             ao12: None,
             ao100: None,
