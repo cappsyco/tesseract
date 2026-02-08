@@ -17,11 +17,17 @@ use cosmic::widget::{
 };
 use cube_scrambler::generate_scramble;
 use hrsw::Stopwatch;
-use std::collections::HashMap;
+use std::collections::{HashMap, VecDeque};
 use std::time::Duration;
 use tracing;
 
 const APP_ICON: &[u8] = include_bytes!("../resources/icons/hicolor/scalable/apps/icon.svg");
+
+#[derive(Clone, Debug)]
+pub enum DialogPage {
+    RemoveAllSolves,
+    RemoveSolve(usize),
+}
 
 pub struct AppModel {
     core: cosmic::Core,
@@ -29,6 +35,7 @@ pub struct AppModel {
     nav: nav_bar::Model,
     key_binds: HashMap<menu::KeyBind, MenuAction>,
     config: Config,
+    dialog_pages: VecDeque<DialogPage>,
     space_pressed: bool,
     current_cube: Cube,
     cube_options: Vec<Cube>,
@@ -50,6 +57,11 @@ pub enum Message {
     SpaceHeld,
     OpenUrl(String),
     CubeUpdate(usize),
+    DialogCancel,
+    DialogRemoveAllSolves,
+    DialogRemoveSolve(usize),
+    RemoveSolve(usize),
+    RemoveAllSolves
 }
 
 impl cosmic::Application for AppModel {
@@ -97,6 +109,7 @@ impl cosmic::Application for AppModel {
             nav,
             key_binds: HashMap::new(),
             config,
+            dialog_pages: VecDeque::new(),
             current_cube: current_cube.clone(),
             cube_options,
             cube_options_labels,
@@ -236,7 +249,6 @@ impl cosmic::Application for AppModel {
 
         // Record
         if !self.record.solves.is_empty() {
-
             let mut solve_list = settings::section();
             let ao5_label: String = String::from("AO5: ");
             let ao12_label: String = String::from("AO12: ");
@@ -274,27 +286,53 @@ impl cosmic::Application for AppModel {
                             .size(15)
                             .width(Length::Fill)
                             .align_x(Alignment::Center),
+                    )
+                    .push(
+                        container(
+                            widget::button::icon(
+                                widget::icon::from_name("edit-delete-symbolic").size(100),
+                            )
+                            .class(cosmic::style::Button::Destructive)
+                            .on_press(Message::DialogRemoveAllSolves),
+                        )
                     ),
             );
 
             // Solves
+            let mut solve_i = 0;
             for solve in &self.record.solves {
                 solve_list = solve_list.add(
                     widget::row()
                         .push(
-                            container(widget::text::body(format!("{}", solve.scramble.join(" ")))
-                                .size(15)
-                                .width(Length::Fill)).padding(active_theme.cosmic().space_s())
-                                .align_y(Alignment::Center),
+                            container(
+                                widget::text::body(format!("{}", solve.scramble.join(" ")))
+                                    .size(15)
+                                    .width(Length::Fill),
+                            )
+                            .padding(active_theme.cosmic().space_s())
+                            .align_y(Alignment::Center),
                         )
                         .push(
                             container(
-                            widget::text::body(format!("{}", solve.time()))
-                                .size(22)
-                                .align_x(Alignment::End)).padding(active_theme.cosmic().space_s())
+                                widget::text::body(format!("{}", solve.time()))
+                                    .size(22)
+                                    .align_x(Alignment::End),
+                            )
+                            .padding(active_theme.cosmic().space_s()),
+                        )
+                        .push(
+                            container(
+                                widget::button::icon(
+                                    widget::icon::from_name("edit-delete-symbolic").size(100),
+                                )
+                                .on_press(Message::DialogRemoveSolve(solve_i)),
+                            )
+                            .padding([10,0,0,0]),
                         ),
                 );
+                solve_i += 1;
             }
+
             page_content = page_content
                 .push(Space::with_height(padding))
                 .push(solve_list);
@@ -344,6 +382,34 @@ impl cosmic::Application for AppModel {
         ])
     }
 
+    fn dialog(&self) -> Option<Element<'_, Message>> {
+        let dialog_page = self.dialog_pages.front()?;
+
+        let dialog = match dialog_page {
+            DialogPage::RemoveSolve(i) => widget::dialog()
+                .title(fl!("remove-solve"))
+                .primary_action(
+                    widget::button::destructive(fl!("remove")).on_press(Message::RemoveSolve(*i)),
+                )
+                .secondary_action(
+                    widget::button::standard(fl!("cancel")).on_press(Message::DialogCancel),
+                )
+                .apply(Element::from),
+
+            DialogPage::RemoveAllSolves => widget::dialog()
+                .title(fl!("remove-all-solves-for-puzzle"))
+                .primary_action(
+                    widget::button::destructive(fl!("remove")).on_press(Message::RemoveAllSolves),
+                )
+                .secondary_action(
+                    widget::button::standard(fl!("cancel")).on_press(Message::DialogCancel),
+                )
+                .apply(Element::from),
+        };
+
+        Some(dialog)
+    }
+
     fn update(&mut self, message: Self::Message) -> Task<cosmic::Action<Self::Message>> {
         match message {
             Message::OpenUrl(url) => match open::that_detached(&url) {
@@ -358,6 +424,19 @@ impl cosmic::Application for AppModel {
                     self.context_page = context_page;
                     self.core.window.show_context = true;
                 }
+            }
+
+            Message::DialogCancel => {
+                self.dialog_pages.pop_front();
+            }
+
+            Message::DialogRemoveSolve(i) => {
+                self.dialog_pages
+                    .push_front(DialogPage::RemoveSolve(i));
+            }
+
+            Message::DialogRemoveAllSolves => {
+                self.dialog_pages.push_front(DialogPage::RemoveAllSolves);
             }
 
             // TODO: refactor all this
@@ -404,6 +483,16 @@ impl cosmic::Application for AppModel {
             }
             Message::Rescramble => {
                 self.rescramble();
+            }
+            Message::RemoveSolve(uid) => {
+                self.record.solves.remove(uid);
+                self.save_record();
+                self.dialog_pages.pop_front();
+            }
+            Message::RemoveAllSolves => {
+                self.record.solves = vec![];
+                self.save_record();
+                self.dialog_pages.pop_front();
             }
         }
         Task::none()

@@ -7,6 +7,10 @@ page-id = Page { $num }
 git-description = Git commit {$hash} on {$date}
 your-solving-record = Your solving record
 repository = Respository
+cancel = Cancel
+remove = Remove
+remove-solve = Remove this solve
+remove-all-solves-for-puzzle = Remove all solves for this puzzle
 
 cube_two = 2x2
 cube_three = 3x3
