@@ -62,11 +62,14 @@
     <keyword>COSMIC</keyword>
   </keywords>
   <releases>
-    <release version="0.1.2" date="2025-12-10">
+    <release version="0.2.0" date="2026-02-09">
       <description>
-        <p>0.1.2</p>
+        <p>0.2.0</p>
         <ul>
-            <li>libcosmic update to prepare for COSMIC stable release</li>
+            <li>Now supports scrambles for all WCA cuboid puzzles, from 2x2 to 7x7</li>
+            <li>Persistent, per-puzzle solve records</li>
+            <li>Ability to delete individual solves or your whole record for a puzzle</li>
+            <li>Many depoendancy updates, specifically for libcosmic</li>
         </ul>
       </description>
     </release>
