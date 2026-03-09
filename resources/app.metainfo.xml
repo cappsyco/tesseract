@@ -27,7 +27,7 @@
         Časovač pro skládání kostek (speedcubing) vytvořený pomocí libcosmic a navržený pro jednoduché, ale efektivní měření časů řešení.
     </p>
     <ul>
-        <li>Generate WCA compliant scrambles</li>
+		<li>Generate random-move scrambles for cubes from 2x2 to 7x7</li>
         <li xml:lang="cs">Generování scramble podle pravidel WCA</li>
         <li>Time your solves with a StackMat style timer</li>
         <li xml:lang="cs">Měření časů řešení pomocí časovače ve stylu StackMat</li>
