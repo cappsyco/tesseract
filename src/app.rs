@@ -15,6 +15,7 @@ use cosmic::theme;
 use cosmic::widget::{
     self, about, about::About, container, dropdown, menu, nav_bar, settings, Space,
 };
+use regex::Regex;
 use cube_scrambler::generate_scramble;
 use hrsw::Stopwatch;
 use std::collections::{HashMap, VecDeque};
@@ -103,6 +104,12 @@ impl cosmic::Application for AppModel {
             .get::<Record>(current_cube.config_key())
             .unwrap_or_default();
 
+		// trim the last 'xN' of current_cube to pass to cube_scrambler, used in current_scramble
+		// and duplicated in rescramble(){}, because I haven't found a way to reuse the same code
+		let cube_str = current_cube.as_string().clone();
+		let re = Regex::new(r"x\d+$").unwrap();
+		let normalized = re.replace(&cube_str, "").to_string();
+
         let mut app = AppModel {
             core,
             context_page: ContextPage::default(),
@@ -113,8 +120,8 @@ impl cosmic::Application for AppModel {
             current_cube: current_cube.clone(),
             cube_options,
             cube_options_labels,
-            current_scramble: generate_scramble(None, Some(current_cube.as_string()))
-                .unwrap_or_default(),
+			current_scramble: generate_scramble(None, Some(normalized))
+				.unwrap_or_default(),
             timer: Timer::default(),
             space_pressed: false,
             record,
@@ -517,12 +524,14 @@ impl AppModel {
         }
     }
 
-    fn rescramble(&mut self) {
-        self.current_scramble =
-            generate_scramble(None, Some(self.current_cube.as_string().clone()))
-                .unwrap_or_default();
-    }
-
+	fn rescramble(&mut self) {
+		let cube_str = self.current_cube.as_string().clone();
+		let re = Regex::new(r"x\d+$").unwrap();
+		let normalized = re.replace(&cube_str, "").to_string();
+		self.current_scramble =
+			generate_scramble(None, Some(normalized))
+				.unwrap_or_default();
+	}
     fn save_record(&mut self) {
         let _ = self
             .config

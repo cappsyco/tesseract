@@ -12,9 +12,9 @@ remove = Remove
 remove-solve = Remove this solve
 remove-all-solves-for-puzzle = Remove all solves for this puzzle
 
-cube_two = 2x2
-cube_three = 3x3
-cube_four = 4x4
-cube_five = 5x5
-cube_six = 6x6
-cube_seven = 7x7
+cube_two = 2x2x2
+cube_three = 3x3x3
+cube_four = 4x4x4
+cube_five = 5x5x5
+cube_six = 6x6x6
+cube_seven = 7x7x7
