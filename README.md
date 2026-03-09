@@ -15,12 +15,23 @@ We're still early in the life of this app, so features are a bit thin on the gro
 
 ### Future features
 
-In order of priority:
+In order of priority (balance between value and effort):
 
-- Additional stats in your solving record, such as all time best single and average times
+- Comments (e.g., "PLL skip") and manual +2/DNF/DNS in your recorded solves
+- Mo3\*
+- Special indication when you achieve a new PB and highlight it in your record
+- UI enhancements (e.g., scramble image visualization and hide timer while solving)
+- Inspection time for current puzzles (e.g., 15sec for 3x3x3)+Automatic +2/DNF\*
+- Keybinds (e.g., 'esc' to cancel the timer start, 'e/E' to cycle between events and 'n' to generate the next scramble)
+- WCA compliant scrambles
+  - Support for missing WCA puzzles (i.e., Megaminx, Pyraminx, Skewb, Square-1, Clock)
 - Allow organising your solving into separate sessions
-- Support for WCA puzzles other than the standard cubes
-- UI enhancements (e.g. scramble visualisation)
+- Others additional stats in your solving record
+- Multi-phase timing
+  - Proper support for all WCA events (e.g., dedicated entries with predefined configurations for BLD).
+- Other settings (e.g., changing the “hold to start” time and customizing the keybinds)
+
+> '\*' means optional/disabled by default
 
 ## Arch User Repository installation
 
