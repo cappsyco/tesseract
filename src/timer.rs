@@ -10,7 +10,7 @@ pub enum Status {
 
 #[derive(Debug)]
 pub struct Timer {
-    pub time: u64,
+    pub time: u32,
     pub status: Status,
 }
 
@@ -33,8 +33,8 @@ impl Timer {
     }
 }
 
-pub fn format_from_ms(time: u64) -> String {
-    let duration = Duration::from_millis(time);
+pub fn format_from_ms(time: u32) -> String {
+    let duration = Duration::from_millis(time.into());
     let minutes = duration.as_millis() / 60_000;
     let seconds = (duration.as_millis() % 60_000) / 1_000;
     let millis = (duration.as_millis() % 1_000) / 10;
