@@ -35,6 +35,7 @@ pub struct AppModel {
     nav: nav_bar::Model,
     key_binds: HashMap<menu::KeyBind, MenuAction>,
     config: Config,
+	state: Config,
     dialog_pages: VecDeque<DialogPage>,
     space_pressed: bool,
     current_cube: Cube,
@@ -85,9 +86,10 @@ impl cosmic::Application for AppModel {
     ) -> (Self, Task<cosmic::Action<Self::Message>>) {
         let nav = nav_bar::Model::default();
         let config = cosmic::cosmic_config::Config::new(Self::APP_ID, 1).unwrap();
+        let state = cosmic::cosmic_config::Config::new_state(Self::APP_ID, 1).unwrap();
 
         // cube values
-        let current_cube = config.get::<Cube>("current_cube").unwrap_or_default();
+        let current_cube = state.get::<Cube>("current_cube").unwrap_or_default();
         let cube_options = vec![
             Cube::Two,
             Cube::Three,
@@ -109,6 +111,7 @@ impl cosmic::Application for AppModel {
             nav,
             key_binds: HashMap::new(),
             config,
+			state,
             dialog_pages: VecDeque::new(),
             current_cube: current_cube.clone(),
             cube_options,
@@ -475,7 +478,7 @@ impl cosmic::Application for AppModel {
                     .config
                     .get::<Record>(self.current_cube.config_key())
                     .unwrap_or_default();
-                let _ = self.config.set("current_cube", &self.current_cube);
+                let _ = self.state.set("current_cube", &self.current_cube);
                 self.rescramble();
             }
             Message::Rescramble => {
