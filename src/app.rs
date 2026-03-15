@@ -2,18 +2,18 @@
 
 use crate::fl;
 use crate::record::{Cube, Record, Solve};
-use crate::timer::{Status, Timer, format_from_ms};
+use crate::timer::{format_from_ms, Status, Timer};
 use cosmic::app::context_drawer;
 use cosmic::app::context_drawer::ContextDrawer;
 use cosmic::cosmic_config::{Config, ConfigGet, ConfigSet};
 use cosmic::iced::keyboard::key::Named;
-use cosmic::iced::{Alignment, Length, Subscription, keyboard};
-use cosmic::iced::{Radius, time};
+use cosmic::iced::{keyboard, Alignment, Length, Subscription};
+use cosmic::iced::{time, Radius};
 use cosmic::iced_widget::{rule, scrollable};
 use cosmic::prelude::*;
 use cosmic::theme;
 use cosmic::widget::{
-    self, Space, about, about::About, container, dropdown, menu, nav_bar, settings,
+    self, about, about::About, container, dropdown, menu, nav_bar, settings, Space,
 };
 use cube_scrambler::generate_scramble;
 use hrsw::Stopwatch;
@@ -61,7 +61,7 @@ pub enum Message {
     DialogRemoveAllSolves,
     DialogRemoveSolve(usize),
     RemoveSolve(usize),
-    RemoveAllSolves
+    RemoveAllSolves,
 }
 
 impl cosmic::Application for AppModel {
@@ -287,15 +287,13 @@ impl cosmic::Application for AppModel {
                             .width(Length::Fill)
                             .align_x(Alignment::Center),
                     )
-                    .push(
-                        container(
-                            widget::button::icon(
-                                widget::icon::from_name("edit-delete-symbolic").size(100),
-                            )
-                            .class(cosmic::style::Button::Destructive)
-                            .on_press(Message::DialogRemoveAllSolves),
+                    .push(container(
+                        widget::button::icon(
+                            widget::icon::from_name("edit-delete-symbolic").size(100),
                         )
-                    ),
+                        .class(cosmic::style::Button::Destructive)
+                        .on_press(Message::DialogRemoveAllSolves),
+                    )),
             );
 
             // Solves
@@ -327,7 +325,7 @@ impl cosmic::Application for AppModel {
                                 )
                                 .on_press(Message::DialogRemoveSolve(solve_i)),
                             )
-                            .padding([10,0,0,0]),
+                            .padding([10, 0, 0, 0]),
                         ),
                 );
                 solve_i += 1;
@@ -431,8 +429,7 @@ impl cosmic::Application for AppModel {
             }
 
             Message::DialogRemoveSolve(i) => {
-                self.dialog_pages
-                    .push_front(DialogPage::RemoveSolve(i));
+                self.dialog_pages.push_front(DialogPage::RemoveSolve(i));
             }
 
             Message::DialogRemoveAllSolves => {
