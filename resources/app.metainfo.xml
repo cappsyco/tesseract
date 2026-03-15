@@ -42,6 +42,10 @@
   </branding>
   <screenshots>
       <screenshot type="default" xml:lang="en">
+        <image>https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screenshots/screenshot.png</image>
+        <caption>Main app view with scramble and timer. Hold Space to start.</caption>
+      </screenshot>
+      <screenshot type="dark" xml:lang="en">
         <image>https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screenshots/screen_dark_1.png</image>
         <caption>Main app view with scramble, timer and solve record (default COSMIC dark mode)</caption>
         <caption xml:lang="cs">Hlavní zobrazení aplikace se scramblem, časovačem a záznamem řešení (výchozí tmavý režim COSMIC)</caption>
