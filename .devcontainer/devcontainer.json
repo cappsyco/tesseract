@@ -1,6 +1,8 @@
 {
   "name": "COSMIC Rust",
-  "image": "jonathancapps/cosmic-rust",
+  "build": {
+    "dockerfile": "Containerfile"	  
+  },
   "remoteUser": "cosmicdev",
   "postCreateCommand": "rustc --version && cargo --version",
   "containerEnv": {
