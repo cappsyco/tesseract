@@ -2,18 +2,18 @@
 
 use crate::fl;
 use crate::record::{Cube, Record, Solve};
-use crate::timer::{format_from_ms, Status, Timer};
+use crate::timer::{Status, Timer, format_from_ms};
 use cosmic::app::context_drawer;
 use cosmic::app::context_drawer::ContextDrawer;
 use cosmic::cosmic_config::{Config, ConfigGet, ConfigSet};
 use cosmic::iced::keyboard::key::Named;
-use cosmic::iced::{keyboard, Alignment, Length, Subscription};
-use cosmic::iced::{time, Radius};
+use cosmic::iced::{Alignment, Length, Subscription, keyboard};
+use cosmic::iced::{Radius, time};
 use cosmic::iced_widget::{rule, scrollable};
 use cosmic::prelude::*;
 use cosmic::theme;
 use cosmic::widget::{
-    self, about, about::About, container, dropdown, menu, nav_bar, settings, Space,
+    self, Space, about, about::About, container, dropdown, menu, nav_bar, settings,
 };
 use cube_scrambler::generate_scramble;
 use hrsw::Stopwatch;
@@ -204,7 +204,7 @@ impl cosmic::Application for AppModel {
         // Timer
         let timer_status = self.timer.status.clone();
         page_content = page_content
-            .push(Space::with_height(padding))
+            .push(Space::new().height(padding))
             .push(widget::divider::horizontal::default())
             .push(
                 widget::text::text(self.timer.display())
@@ -229,7 +229,8 @@ impl cosmic::Application for AppModel {
                                 divider_color.green,
                                 divider_color.blue,
                             ),
-                            width: 15,
+                            //width: 15,
+                            snap: false,
                             radius: Radius::new(20),
                             fill_mode: rule::FillMode::Full,
                         }
@@ -237,7 +238,7 @@ impl cosmic::Application for AppModel {
             );
 
         // Hint
-        page_content = page_content.push(Space::with_height(padding)).push(
+        page_content = page_content.push(Space::new().height(padding)).push(
             widget::text::text(match self.timer.status {
                 Status::Running => fl!("tap-space-to-stop"),
                 _ => fl!("hold-space-to-start"),
@@ -332,7 +333,7 @@ impl cosmic::Application for AppModel {
             }
 
             page_content = page_content
-                .push(Space::with_height(padding))
+                .push(Space::new().height(padding))
                 .push(solve_list);
         }
 
@@ -353,19 +354,19 @@ impl cosmic::Application for AppModel {
     fn subscription(&self) -> Subscription<Self::Message> {
         fn handle_press(key: keyboard::Key, _modifiers: keyboard::Modifiers) -> Option<Message> {
             match key.as_ref() {
-                keyboard::Key::Named(Named::Space) => Some(Message::SpacePressed),
+                keyboard::Key::Character("Space") => Some(Message::SpacePressed),
                 _ => None,
             }
         }
         fn handle_release(key: keyboard::Key, _modifiers: keyboard::Modifiers) -> Option<Message> {
             match key.as_ref() {
-                keyboard::Key::Named(Named::Space) => Some(Message::SpaceReleased),
+                keyboard::Key::Character("Space") => Some(Message::SpaceReleased),
                 _ => None,
             }
         }
 
         Subscription::batch(vec![
-            keyboard::on_key_press(handle_press),
+            keyboard::on_key_pressed(handle_press),
             keyboard::on_key_release(handle_release),
             match self.timer.status {
                 Status::Running => {
