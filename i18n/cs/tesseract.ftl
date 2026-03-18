@@ -1,0 +1,20 @@
+app-title = Teserakt
+about = O aplikaci
+view = Zobrazení
+hold-space-to-start = Podržte mezerník pro spuštění
+tap-space-to-stop = Stiskněte mezerník pro zastavení
+page-id = Stránka { $num }
+git-description = Git commit {$hash} dne {$date}
+your-solving-record = Váš záznam řešení
+repository = Repozitář
+cancel = Zrušit
+remove = Odstranit
+remove-solve = Odstranit toto řešení
+remove-all-solves-for-puzzle = Odstranit všechna řešení pro tuto kostku
+
+cube_two = 2x2
+cube_three = 3x3
+cube_four = 4x4
+cube_five = 5x5
+cube_six = 6x6
+cube_seven = 7x7
