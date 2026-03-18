@@ -43,5 +43,6 @@ sudo just install
 ```
 
 ## Credit & thanks
+* [segment7 font](https://fontlibrary.org/en/font/segment7)
 * [System76 and their COSMIC desktop environment](https://system76.com/cosmic/)
 * [COSMIC Utilities](https://github.com/cosmic-utils/) - Organization containing third party utilities for COSMIC™
