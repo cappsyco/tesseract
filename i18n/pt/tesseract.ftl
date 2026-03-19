@@ -1,0 +1,20 @@
+app-title = Tesseract
+about = Sobre
+view = Ver
+hold-space-to-start = Segure espaço para iniciar
+tap-space-to-stop = Aperte espaço para parar
+page-id = Página { $num }
+git-description = Git commit {$hash} em {$date}
+your-solving-record = Seu registro de solves
+repository = Repositório
+cancel = Cancelar
+remove = Remover
+remove-solve = Remover esta solve
+remove-all-solves-for-puzzle = Remover todas as solves deste puzzle
+
+cube_two = 2x2x2
+cube_three = 3x3x3
+cube_four = 4x4x4
+cube_five = 5x5x5
+cube_six = 6x6x6
+cube_seven = 7x7x7
