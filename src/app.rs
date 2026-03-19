@@ -146,7 +146,7 @@ impl cosmic::Application for AppModel {
 
         match self.context_page {
             ContextPage::About => Some(ContextDrawer {
-                title: Some("About".into()),
+                title: Some(fl!("about").into()),
                 content: about(&self.about_page, |s| Message::OpenUrl(s.to_string())),
                 on_close: Message::ToggleContextPage(ContextPage::About),
                 header: None,
