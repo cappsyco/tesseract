@@ -142,7 +142,7 @@ impl cosmic::Application for AppModel {
 
         match self.context_page {
             ContextPage::About => Some(ContextDrawer {
-                title: Some("About".into()),
+                title: Some(fl!("about").into()),
                 content: about(&self.about_page, |s| Message::OpenUrl(s.to_string())),
                 on_close: Message::ToggleContextPage(ContextPage::About),
                 header: None,
@@ -431,12 +431,12 @@ impl cosmic::Application for AppModel {
 
             // TODO: refactor all this
             Message::TimerTick => {
-                self.timer.time = self.stopwatch.elapsed().as_millis() as u64;
+                self.timer.time = self.stopwatch.elapsed().as_millis() as u32;
             }
             Message::SpacePressed => {
                 self.space_pressed = true;
                 if self.timer.status == Status::Running {
-                    self.timer.time = self.stopwatch.elapsed().as_millis() as u64;
+                    self.timer.time = self.stopwatch.elapsed().as_millis() as u32;
                     let solve = Solve::new(self.timer.time, &self.current_scramble);
                     self.timer.status = Status::Stopped;
                     self.record.add_solve(solve);

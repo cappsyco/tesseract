@@ -1,6 +1,8 @@
 [Desktop Entry]
 Name=Tesseract
+Name[cs]=Teserakt
 Comment=Speed cubing timer for the COSMIC™ desktop
+Comment[cs]=Časovač pro skládání kostek (speedcubing) v prostředí COSMIC™
 Type=Application
 Icon=uk.co.cappsy.Tesseract
 Exec=tesseract %F

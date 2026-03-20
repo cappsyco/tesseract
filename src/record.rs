@@ -39,13 +39,13 @@ impl Cube {
 
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct Solve {
-    pub time: u64,
+    pub time: u32,
     pub scramble: Vec<String>,
     pub _dnf: bool,
     pub _plus_two: bool,
 }
 impl Solve {
-    pub fn new(time: u64, scramble: &Vec<String>) -> Solve {
+    pub fn new(time: u32, scramble: &Vec<String>) -> Solve {
         Self {
             time,
             scramble: scramble.clone(),
@@ -63,9 +63,9 @@ pub struct Record {
     pub cube: Cube,
     pub solves: Vec<Solve>,
     pub best_solve: Option<Solve>,
-    pub ao5: Option<u64>,
-    pub ao12: Option<u64>,
-    pub ao100: Option<u64>,
+    pub ao5: Option<u32>,
+    pub ao12: Option<u32>,
+    pub ao100: Option<u32>,
 }
 impl Record {
     pub fn default() -> Record {
@@ -88,7 +88,7 @@ impl Record {
     }
 }
 
-fn calc_average(solves: &Vec<Solve>, ao: usize) -> Option<u64> {
+fn calc_average(solves: &Vec<Solve>, ao: usize) -> Option<u32> {
     if solves.len() >= ao {
         let last_n: &[Solve] = &solves[0..ao];
         let mut sum = 0;
@@ -104,7 +104,7 @@ fn calc_average(solves: &Vec<Solve>, ao: usize) -> Option<u64> {
             sum += solve.time;
         }
         sum = sum - high - low;
-        Some(sum / (ao as u64 - 2))
+        Some(sum / (ao as u32 - 2))
     } else {
         None
     }
