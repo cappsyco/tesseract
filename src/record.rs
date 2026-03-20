@@ -1,4 +1,3 @@
-use crate::fl;
 use crate::timer;
 use cosmic::cosmic_config::{self, CosmicConfigEntry, cosmic_config_derive::CosmicConfigEntry};
 use serde::{Deserialize, Serialize};
@@ -17,12 +16,12 @@ pub enum Cube {
 impl Cube {
     pub fn as_string(&self) -> String {
         match self {
-            Cube::Two => fl!("cube_two"),
-            Cube::Three => fl!("cube_three"),
-            Cube::Four => fl!("cube_four"),
-            Cube::Five => fl!("cube_five"),
-            Cube::Six => fl!("cube_six"),
-            Cube::Seven => fl!("cube_seven"),
+            Cube::Two => "2x2x2".to_string(),
+            Cube::Three => "3x3x3".to_string(),
+            Cube::Four => "4x4x4".to_string(),
+            Cube::Five => "5x5x5".to_string(),
+            Cube::Six => "6x6x6".to_string(),
+            Cube::Seven => "7x7x7".to_string(),
         }
     }
     pub fn config_key(&self) -> &str {

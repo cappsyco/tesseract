@@ -4951,6 +4951,7 @@ dependencies = [
  "libcosmic",
  "open",
  "rand 0.10.0",
+ "regex",
  "rust-embed",
  "serde",
  "strum",

@@ -12,6 +12,7 @@ futures-util = "0.3.31"
 i18n-embed-fl = "0.10.0"
 open = "5.3.3"
 rand = "0.10.0"
+regex = "1.12.3"
 rust-embed = "8.11.0"
 strum = { version = "0.27.2", features = ["derive"] }
 tokio = { version = "1.49.0", features = ["full"] }
