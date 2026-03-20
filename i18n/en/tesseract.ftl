@@ -7,6 +7,7 @@ page-id = Page { $num }
 git-description = Git commit {$hash} on {$date}
 your-solving-record = Your solving record
 repository = Respository
+contributors = Contributors
 cancel = Cancel
 remove = Remove
 remove-solve = Remove this solve

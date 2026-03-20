@@ -553,4 +553,11 @@ pub fn build_about() -> About {
         .license(env!("CARGO_PKG_LICENSE"))
         .author("Jonathan Capps")
         .links([(fl!("repository"), env!("CARGO_PKG_REPOSITORY"))])
+        .links([
+            (fl!("repository"), env!("CARGO_PKG_REPOSITORY")),
+            (
+                fl!("contributors"),
+                "https://github.com/cappsyco/tesseract/graphs/contributors",
+            ),
+        ])
 }
