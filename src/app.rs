@@ -300,7 +300,7 @@ impl cosmic::Application for AppModel {
                         .push(
                             container(
                                 widget::text::body(format!("{}", solve.scramble.join(" ")))
-                                    .size(15)
+                                    .size(16)
                                     .width(Length::Fill),
                             )
                             .padding(active_theme.cosmic().space_s())
@@ -310,7 +310,7 @@ impl cosmic::Application for AppModel {
                             container(
                                 widget::text::body(format!("{}", solve.time()))
                                     .size(22)
-                                    .align_x(Alignment::End),
+                                    .align_x(Alignment::Center),
                             )
                             .padding(active_theme.cosmic().space_s()),
                         )
@@ -321,7 +321,12 @@ impl cosmic::Application for AppModel {
                                 )
                                 .on_press(Message::DialogRemoveSolve(solve_i)),
                             )
-                            .padding([10, 0, 0, 0]),
+                            .padding([
+                                ((active_theme.cosmic().space_s() / 2) + 2),
+                                0,
+                                0,
+                                0,
+                            ]),
                         ),
                 );
                 solve_i += 1;
