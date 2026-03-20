@@ -3,15 +3,11 @@
 use crate::fl;
 use crate::record::{Cube, Record, Solve};
 use crate::timer::{Status, Timer, format_from_ms};
-use cosmic::app::context_drawer;
-use cosmic::app::context_drawer::ContextDrawer;
+use cosmic::app::context_drawer::{self, ContextDrawer};
 use cosmic::cosmic_config::{Config, ConfigGet, ConfigSet};
-use cosmic::iced::keyboard::key::Named;
-use cosmic::iced::{Alignment, Length, Subscription, keyboard};
-use cosmic::iced::{Radius, time};
-use cosmic::iced_widget::{rule, scrollable};
+use cosmic::iced::{self, Alignment, Border, Event, Length, Subscription, event, keyboard, time};
+use cosmic::iced_widget::scrollable;
 use cosmic::prelude::*;
-use cosmic::theme;
 use cosmic::widget::{
     self, Space, about, about::About, container, dropdown, menu, nav_bar, settings,
 };
@@ -203,6 +199,11 @@ impl cosmic::Application for AppModel {
 
         // Timer
         let timer_status = self.timer.status.clone();
+        let divider_color = match timer_status {
+            Status::Hold => active_theme.cosmic().destructive_color(),
+            Status::Ready => active_theme.cosmic().success_color(),
+            _ => active_theme.cosmic().accent_color(),
+        };
         page_content = page_content
             .push(Space::new().height(padding))
             .push(widget::divider::horizontal::default())
@@ -213,28 +214,22 @@ impl cosmic::Application for AppModel {
                     .align_x(Alignment::Center),
             )
             .push(
-                widget::divider::horizontal::heavy()
+                container("")
+                    .height(13)
                     .width(150)
-                    .class(theme::Rule::custom(move |theme| {
-                        let cosmic = theme.cosmic();
-                        let divider_color = match timer_status {
-                            Status::Hold => &cosmic.destructive_color(),
-                            Status::Ready => &cosmic.success_color(),
-                            _ => &cosmic.primary_component_color(),
-                        };
-
-                        rule::Style {
-                            color: cosmic::iced::Color::from_rgb(
-                                divider_color.red,
-                                divider_color.green,
-                                divider_color.blue,
-                            ),
-                            //width: 15,
-                            snap: false,
-                            radius: Radius::new(20),
-                            fill_mode: rule::FillMode::Full,
-                        }
-                    })),
+                    .style(move |_| container::Style {
+                        background: Some(iced::Background::Color(cosmic::iced::Color::from_rgb(
+                            divider_color.red,
+                            divider_color.green,
+                            divider_color.blue,
+                        ))),
+                        border: Border {
+                            radius: 20.into(),
+                            width: 0.0,
+                            color: iced::Color::TRANSPARENT,
+                        },
+                        ..Default::default()
+                    }),
             );
 
         // Hint
@@ -352,22 +347,19 @@ impl cosmic::Application for AppModel {
     }
 
     fn subscription(&self) -> Subscription<Self::Message> {
-        fn handle_press(key: keyboard::Key, _modifiers: keyboard::Modifiers) -> Option<Message> {
-            match key.as_ref() {
-                keyboard::Key::Character("Space") => Some(Message::SpacePressed),
-                _ => None,
-            }
-        }
-        fn handle_release(key: keyboard::Key, _modifiers: keyboard::Modifiers) -> Option<Message> {
-            match key.as_ref() {
-                keyboard::Key::Character("Space") => Some(Message::SpaceReleased),
-                _ => None,
-            }
-        }
-
         Subscription::batch(vec![
-            keyboard::on_key_pressed(handle_press),
-            keyboard::on_key_release(handle_release),
+            event::listen_with(|event, _status, _window_id| match event {
+                Event::Keyboard(keyboard::Event::KeyPressed { key, .. }) => match key.as_ref() {
+                    cosmic::iced::keyboard::Key::Character(" ") => Some(Message::SpacePressed),
+                    _ => None,
+                },
+                Event::Keyboard(keyboard::Event::KeyReleased { key, .. }) => match key.as_ref() {
+                    cosmic::iced::keyboard::Key::Character(" ") => Some(Message::SpaceReleased),
+                    _ => None,
+                },
+                // TODO: Add mouse / touch bindings
+                _ => None,
+            }),
             match self.timer.status {
                 Status::Running => {
                     time::every(Duration::from_millis(100)).map(|_| Message::TimerTick)
