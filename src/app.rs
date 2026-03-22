@@ -11,9 +11,9 @@ use cosmic::prelude::*;
 use cosmic::widget::{
     self, Space, about, about::About, container, dropdown, menu, nav_bar, settings,
 };
-use regex::Regex;
 use cube_scrambler::generate_scramble;
 use hrsw::Stopwatch;
+use regex::Regex;
 use std::collections::{HashMap, VecDeque};
 use std::time::Duration;
 use tracing;
@@ -41,6 +41,7 @@ pub struct AppModel {
     timer: Timer,
     record: Record,
     stopwatch: Stopwatch,
+    app_themes: Vec<String>,
     about_page: About,
 }
 
@@ -100,11 +101,11 @@ impl cosmic::Application for AppModel {
             .get::<Record>(current_cube.config_key())
             .unwrap_or_default();
 
-		// trim the last 'xN' of current_cube to pass to cube_scrambler, used in current_scramble
-		// and duplicated in rescramble(){}, because I haven't found a way to reuse the same code
-		let cube_str = current_cube.as_string().clone();
-		let re = Regex::new(r"x\d+$").unwrap();
-		let normalized = re.replace(&cube_str, "").to_string();
+        // trim the last 'xN' of current_cube to pass to cube_scrambler, used in current_scramble
+        // and duplicated in rescramble(){}, because I haven't found a way to reuse the same code
+        let cube_str = current_cube.as_string().clone();
+        let re = Regex::new(r"x\d+$").unwrap();
+        let normalized = re.replace(&cube_str, "").to_string();
 
         let mut app = AppModel {
             core,
@@ -116,8 +117,7 @@ impl cosmic::Application for AppModel {
             current_cube: current_cube.clone(),
             cube_options,
             cube_options_labels,
-			current_scramble: generate_scramble(None, Some(normalized))
-				.unwrap_or_default(),
+            current_scramble: generate_scramble(None, Some(normalized)).unwrap_or_default(),
             timer: Timer::default(),
             space_pressed: false,
             record,
@@ -135,7 +135,10 @@ impl cosmic::Application for AppModel {
             menu::root(fl!("view")).apply(Element::from),
             menu::items(
                 &self.key_binds,
-                vec![menu::Item::Button(fl!("about"), None, MenuAction::About)],
+                vec![
+                    menu::Item::Button(fl!("settings"), None, MenuAction::Settings),
+                    menu::Item::Button(fl!("about"), None, MenuAction::About),
+                ],
             ),
         )]);
 
@@ -156,6 +159,14 @@ impl cosmic::Application for AppModel {
                 actions: None,
                 footer: None,
             }),
+            ContextPage::Settings => Some(ContextDrawer {
+                title: Some(fl!("settings").into()),
+                content: about(&self.about_page, |s| Message::OpenUrl(s.to_string())),
+                on_close: Message::ToggleContextPage(ContextPage::About),
+                header: None,
+                actions: None,
+                footer: None,
+            }), //app::context_drawer::context_drawer(app.settings(), Message::ToggleContextPage).title(app.cosmic.context_page.title()),
         }
     }
 
@@ -522,18 +533,41 @@ impl AppModel {
         }
     }
 
-	fn rescramble(&mut self) {
-		let cube_str = self.current_cube.as_string().clone();
-		let re = Regex::new(r"x\d+$").unwrap();
-		let normalized = re.replace(&cube_str, "").to_string();
-		self.current_scramble =
-			generate_scramble(None, Some(normalized))
-				.unwrap_or_default();
-	}
+    fn rescramble(&mut self) {
+        let cube_str = self.current_cube.as_string().clone();
+        let re = Regex::new(r"x\d+$").unwrap();
+        let normalized = re.replace(&cube_str, "").to_string();
+        self.current_scramble = generate_scramble(None, Some(normalized)).unwrap_or_default();
+    }
     fn save_record(&mut self) {
         let _ = self
             .config
             .set(self.current_cube.config_key(), &self.record);
+    }
+
+    fn set_theme(&mut self) -> Task<Message> {
+        cosmic::command::set_theme(self.config.app_theme.theme())
+    }
+
+    fn settings<'a>(&'a self) -> Element<'a, Message> {
+        let app_theme_selected = match self.config.get("app_theme") {
+            core::config::AppTheme::Dark => 1,
+            core::config::AppTheme::Light => 2,
+            core::config::AppTheme::System => 0,
+        };
+        widget::settings::view_column(vec![
+            widget::settings::section()
+                .title(crate::fl!("appearance"))
+                .add(
+                    widget::settings::item::builder(crate::fl!("theme")).control(widget::dropdown(
+                        &self.cosmic.app_themes,
+                        Some(app_theme_selected),
+                        |i| Message::Settings(SettingsMessage::AppTheme(i)),
+                    )),
+                )
+                .into(),
+        ])
+        .into()
     }
 }
 
@@ -541,11 +575,13 @@ impl AppModel {
 pub enum ContextPage {
     #[default]
     About,
+    Settings,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum MenuAction {
     About,
+    Settings,
 }
 
 impl menu::action::MenuAction for MenuAction {
@@ -554,6 +590,7 @@ impl menu::action::MenuAction for MenuAction {
     fn message(&self) -> Self::Message {
         match self {
             MenuAction::About => Message::ToggleContextPage(ContextPage::About),
+            MenuAction::Settings => Message::ToggleContextPage(ContextPage::Settings),
         }
     }
 }

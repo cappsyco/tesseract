@@ -1,5 +1,6 @@
 app-title = Tesseract
 about = About
+settings = Settings
 view = View
 hold-space-to-start = Hold Space to start
 tap-space-to-stop = Tap Space to stop
