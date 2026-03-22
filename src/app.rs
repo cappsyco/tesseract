@@ -41,7 +41,6 @@ pub struct AppModel {
     timer: Timer,
     record: Record,
     stopwatch: Stopwatch,
-    app_themes: Vec<String>,
     about_page: About,
 }
 
@@ -543,31 +542,6 @@ impl AppModel {
         let _ = self
             .config
             .set(self.current_cube.config_key(), &self.record);
-    }
-
-    fn set_theme(&mut self) -> Task<Message> {
-        cosmic::command::set_theme(self.config.app_theme.theme())
-    }
-
-    fn settings<'a>(&'a self) -> Element<'a, Message> {
-        let app_theme_selected = match self.config.get("app_theme") {
-            core::config::AppTheme::Dark => 1,
-            core::config::AppTheme::Light => 2,
-            core::config::AppTheme::System => 0,
-        };
-        widget::settings::view_column(vec![
-            widget::settings::section()
-                .title(crate::fl!("appearance"))
-                .add(
-                    widget::settings::item::builder(crate::fl!("theme")).control(widget::dropdown(
-                        &self.cosmic.app_themes,
-                        Some(app_theme_selected),
-                        |i| Message::Settings(SettingsMessage::AppTheme(i)),
-                    )),
-                )
-                .into(),
-        ])
-        .into()
     }
 }
 
