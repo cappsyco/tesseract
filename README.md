@@ -18,7 +18,7 @@ We're still early in the life of this app, so features are a bit thin on the gro
 In order of priority (balance between value and effort):
 
 - Comments (e.g., "PLL skip") and manual +2/DNF/DNS in your recorded solves
-- Mo3\*
+- Mean of 3 (Mo3)\*
 - Special indication when you achieve a new PB and highlight it in your record
 - UI enhancements (e.g., scramble image visualization and 'hide timer while solving' option)
 - Inspection time for current puzzles (e.g., 15sec for 3x3x3)+Automatic +2/DNF\*
@@ -60,6 +60,6 @@ sudo just install
 ## Credit & thanks
 * [System76 and their COSMIC desktop environment](https://system76.com/cosmic/)
 * [COSMIC Utilities](https://github.com/cosmic-utils/) - Organization containing third party utilities for COSMIC™
-* [fluent]: https://projectfluent.org/
-* [fluent-guide]: https://projectfluent.org/fluent/guide/hello.html
-* [iso-codes]: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+* [fluent](https://projectfluent.org/)
+* [fluent-guide](https://projectfluent.org/fluent/guide/hello.html)
+* [iso-codes](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)
