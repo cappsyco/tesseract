@@ -24,10 +24,10 @@ In order of priority (balance between value and effort):
 - Inspection time for current puzzles (e.g., 15sec for 3x3x3)+Automatic +2/DNF\*
 - Keybinds (e.g., 'esc' to cancel the timer start, 'e/E' to cycle between events and 'n' to generate the next scramble)
 - WCA compliant scrambles
+  - Proper support for all WCA events (e.g., dedicated entries with predefined configurations for BLD).
 - Support for missing WCA puzzles (i.e., Megaminx, Pyraminx, Skewb, Square-1, Clock)
-- Proper support for all WCA events (e.g., dedicated entries with predefined configurations for BLD).
 - Allow organising your solving into separate sessions
-- Show pther additional stats in your solving record
+- Show other additional stats in your solving record
 - Multi-phase timing
 - Other settings (e.g., changing the “hold to start” time and customizing the keybinds)
 
