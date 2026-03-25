@@ -2,27 +2,22 @@
   "id": "uk.co.cappsy.Tesseract",
   "runtime": "org.freedesktop.Platform",
   "runtime-version": "25.08",
+  "base": "com.system76.Cosmic.BaseApp",
+  "base-version": "stable",
   "sdk": "org.freedesktop.Sdk",
-  "sdk-extensions": [
-    "org.freedesktop.Sdk.Extension.rust-stable",
-    "org.freedesktop.Sdk.Extension.llvm20"
-  ],
+  "sdk-extensions": ["org.freedesktop.Sdk.Extension.rust-stable"],
   "command": "tesseract",
   "finish-args": [
     "--share=ipc",
     "--socket=wayland",
     "--socket=fallback-x11",
-    "--device=all",
-    "--talk-name=com.system76.CosmicSettingsDaemon"
+    "--talk-name=com.system76.CosmicSettingsDaemon",
+    "--filesystem=xdg-config/cosmic:rw"
   ],
   "build-options": {
-    "append-path": "/usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/llvm20/bin",
+    "append-path": "/usr/lib/sdk/rust-stable/bin",
     "env": {
-      "CARGO_HOME": "/run/build/tesseract/cargo",
-      "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER": "clang",
-      "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS": "-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold",
-      "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER": "clang",
-      "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUSTFLAGS": "-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold"
+      "CARGO_HOME": "/run/build/tesseract/cargo"
     }
   },
   "modules": [

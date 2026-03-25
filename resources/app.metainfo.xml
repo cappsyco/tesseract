@@ -76,14 +76,23 @@
     <keyword>COSMIC</keyword>
   </keywords>
   <releases>
-    <release version="0.2.0" date="2026-02-09">
+    <release version="0.3.0" date="2026-03-25">
       <description>
+        <p>0.3.0</p>
+        <ul>
+            <li>Rebased to the newest version of libcosmic and refactored some styles and input handling as a result. The latter will help with adding mouse and touch inputs for timer control in the future.</li>
+            <li>Started storing a timestamp for solves to power a later 'solves over time' stats screen</li>
+            <li>Added Czech, Portuguese and Esperanto translations!</li>
+            <li>Many more behind the scenes refactors and display tweaks</li>
+        </ul>
+        <p>Thank you to contributors DanielKaleby and lorduskordus</p>
+
         <p>0.2.0</p>
         <ul>
             <li>Now supports scrambles for all WCA cuboid puzzles, from 2x2 to 7x7</li>
             <li>Persistent, per-puzzle solve records</li>
             <li>Ability to delete individual solves or your whole record for a puzzle</li>
-            <li>Many depoendancy updates, specifically for libcosmic</li>
+            <li>Many dependancy updates, specifically for libcosmic</li>
         </ul>
       </description>
     </release>
