@@ -41,7 +41,7 @@ impl Cube {
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct Solve {
     pub time: u32,
-    pub timestamp: u64,
+    pub timestamp: Option<u64>,
     pub scramble: Vec<String>,
     pub _dnf: bool,
     pub _plus_two: bool,
@@ -50,10 +50,10 @@ impl Solve {
     pub fn new(time: u32, scramble: &Vec<String>) -> Solve {
         Self {
             time,
-            timestamp: SystemTime::now()
+            timestamp: Some(SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
                 .unwrap()
-                .as_secs(),
+                .as_secs()),
             scramble: scramble.clone(),
             _dnf: false,
             _plus_two: false,
