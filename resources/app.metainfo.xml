@@ -78,7 +78,7 @@
   <releases>
     <release version="0.3.0" date="2026-03-25">
       <description>
-        <p>0.3.0</p>
+        <p>0.3.1</p>
         <ul>
             <li>Rebased to the newest version of libcosmic and refactored some styles and input handling as a result. The latter will help with adding mouse and touch inputs for timer control in the future.</li>
             <li>Started storing a timestamp for solves to power a later 'solves over time' stats screen</li>
