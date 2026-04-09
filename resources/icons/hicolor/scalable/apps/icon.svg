@@ -1,143 +1,288 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
-   width="128.00002"
-   height="127.99999"
-   viewBox="0 0 33.866671 33.866665"
+   viewBox="0 0 128 128"
+   width="512"
+   height="512"
    version="1.1"
-   id="svg1"
-   inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
-   sodipodi:docname="icon.svg"
-   inkscape:export-filename="tesseract_logo.png"
-   inkscape:export-xdpi="96"
-   inkscape:export-ydpi="96"
+   id="svg24"
+   sodipodi:docname="tesseract.svg"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
   <sodipodi:namedview
-     id="namedview1"
+     id="namedview24"
      pagecolor="#ffffff"
-     bordercolor="currentColor"
+     bordercolor="#000000"
      borderopacity="0.25"
      inkscape:showpageshadow="2"
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
-     inkscape:document-units="px"
-     inkscape:zoom="1.1820906"
-     inkscape:cx="-116.31934"
-     inkscape:cy="90.940574"
-     inkscape:window-width="1432"
-     inkscape:window-height="823"
-     inkscape:window-x="20"
-     inkscape:window-y="20"
+     inkscape:zoom="0.69654486"
+     inkscape:cx="358.91443"
+     inkscape:cy="366.09272"
+     inkscape:window-width="1158"
+     inkscape:window-height="839"
+     inkscape:window-x="647"
+     inkscape:window-y="87"
      inkscape:window-maximized="0"
-     inkscape:current-layer="layer1" />
+     inkscape:current-layer="svg24" />
   <defs
-     id="defs1" />
-  <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(-32.279167,-138.64166)">
-    <g
-       id="g2"
-       transform="translate(1.3229161,1.3229221)">
-      <rect
-         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.237718;stroke-opacity:0"
-         id="rect12"
-         width="26.458334"
-         height="26.458334"
-         x="34.660419"
-         y="141.0229"
-         rx="2.1166668" />
-      <g
-         id="g1"
-         transform="matrix(0.90909094,0,0,0.90909094,2.5525859,12.221875)">
-        <rect
-           x="36.582726"
-           y="142.94524"
-           width="7.9767036"
-           height="7.9767036"
-           rx="1.5953407"
-           fill="#e0a3a9"
-           id="rect2"
-           style="fill:#b90000;fill-opacity:1;stroke:#ffffff;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1" />
-        <rect
-           x="45.882347"
-           y="142.94524"
-           width="7.9767036"
-           height="7.9767036"
-           rx="1.5953407"
-           fill="#A8D0B8"
-           id="rect3"
-           style="fill:#b90000;fill-opacity:1;stroke:#ffffff;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1" />
-        <rect
-           x="55.181969"
-           y="142.94524"
-           width="7.9767036"
-           height="7.9767036"
-           rx="1.5953407"
-           fill="#F0D8A8"
-           id="rect4"
-           style="fill:#b90000;fill-opacity:1;stroke:#ffffff;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1" />
-        <rect
-           x="36.582726"
-           y="152.24486"
-           width="7.9767036"
-           height="7.9767036"
-           rx="1.5953407"
-           fill="#B8A7D0"
-           id="rect5"
-           style="fill:#009b48;fill-opacity:1;stroke:#ffffff;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1" />
-        <rect
-           x="45.882347"
-           y="152.24486"
-           width="7.9767036"
-           height="7.9767036"
-           rx="1.5953407"
-           fill="#A3C1E0"
-           id="rect6"
-           style="fill:#b90000;fill-opacity:1;stroke:#ffffff;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1" />
-        <rect
-           x="55.181969"
-           y="152.24486"
-           width="7.9767036"
-           height="7.9767036"
-           rx="1.5953407"
-           fill="#E0A3A9"
-           id="rect7"
-           style="fill:#ffd500;fill-opacity:1;stroke:#ffffff;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1" />
-        <rect
-           x="36.582726"
-           y="161.54448"
-           width="7.9767036"
-           height="7.9767036"
-           rx="1.5953407"
-           fill="#F0D8A8"
-           id="rect8"
-           style="fill:#0045ad;fill-opacity:1;stroke:#ffffff;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1" />
-        <rect
-           x="45.882347"
-           y="161.54448"
-           width="7.9767036"
-           height="7.9767036"
-           rx="1.5953407"
-           fill="#B8A7D0"
-           id="rect9"
-           style="fill:#b90000;fill-opacity:1;stroke:#ffffff;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1" />
-        <rect
-           x="55.181969"
-           y="161.54448"
-           width="7.9767036"
-           height="7.9767036"
-           rx="1.5953407"
-           fill="#a8d0b8"
-           id="rect10"
-           style="fill:#ff5900;fill-opacity:1;stroke:#ffffff;stroke-width:0.529167;stroke-dasharray:none;stroke-opacity:1" />
-      </g>
-    </g>
-  </g>
+     id="defs15">
+    <linearGradient
+       id="bgGrad"
+       x1="0%"
+       y1="0%"
+       x2="0%"
+       y2="100%">
+      <stop
+         offset="0%"
+         stop-color="#2a2a32"
+         id="stop1" />
+      <stop
+         offset="100%"
+         stop-color="#18181d"
+         id="stop2" />
+    </linearGradient>
+    <linearGradient
+       id="redGrad"
+       x1="0%"
+       y1="0%"
+       x2="0%"
+       y2="100%">
+      <stop
+         offset="0%"
+         stop-color="#ff1a1a"
+         id="stop3" />
+      <stop
+         offset="100%"
+         stop-color="#cc0000"
+         id="stop4" />
+    </linearGradient>
+    <linearGradient
+       id="greenIndent"
+       x1="0%"
+       y1="0%"
+       x2="0%"
+       y2="100%">
+      <stop
+         offset="0%"
+         stop-color="#698f73"
+         id="stop5" />
+      <stop
+         offset="100%"
+         stop-color="#8cbe99"
+         id="stop6" />
+    </linearGradient>
+    <linearGradient
+       id="yellowIndent"
+       x1="0%"
+       y1="0%"
+       x2="0%"
+       y2="100%">
+      <stop
+         offset="0%"
+         stop-color="#b8a86c"
+         id="stop7" />
+      <stop
+         offset="100%"
+         stop-color="#e6d288"
+         id="stop8" />
+    </linearGradient>
+    <linearGradient
+       id="blueIndent"
+       x1="0%"
+       y1="0%"
+       x2="0%"
+       y2="100%">
+      <stop
+         offset="0%"
+         stop-color="#677aa6"
+         id="stop9" />
+      <stop
+         offset="100%"
+         stop-color="#88a1db"
+         id="stop10" />
+    </linearGradient>
+    <linearGradient
+       id="orangeIndent"
+       x1="0%"
+       y1="0%"
+       x2="0%"
+       y2="100%">
+      <stop
+         offset="0%"
+         stop-color="#b08466"
+         id="stop11" />
+      <stop
+         offset="100%"
+         stop-color="#d9a27e"
+         id="stop12" />
+    </linearGradient>
+    <filter
+       id="shadow"
+       x="-0.13846154"
+       y="-0.13846154"
+       width="1.2769231"
+       height="1.3538462">
+      <feGaussianBlur
+         in="SourceAlpha"
+         stdDeviation="1.5"
+         result="blur"
+         id="feGaussianBlur12" />
+      <feOffset
+         dx="0"
+         dy="2"
+         result="offsetBlur"
+         id="feOffset12" />
+      <feFlood
+         flood-color="black"
+         flood-opacity="0.5"
+         result="shadowColor"
+         id="feFlood12" />
+      <feComposite
+         in="shadowColor"
+         in2="offsetBlur"
+         operator="in"
+         result="shadow"
+         id="feComposite12" />
+      <feMerge
+         id="feMerge13">
+        <feMergeNode
+           in="shadow"
+           id="feMergeNode12" />
+        <feMergeNode
+           in="SourceGraphic"
+           id="feMergeNode13" />
+      </feMerge>
+    </filter>
+    <filter
+       id="insetShadow"
+       x="-0.13846154"
+       y="-0.13846154"
+       width="1.2769231"
+       height="1.3538462">
+      <feOffset
+         dx="0"
+         dy="2"
+         id="feOffset13" />
+      <feGaussianBlur
+         stdDeviation="1.5"
+         result="offset-blur"
+         id="feGaussianBlur13" />
+      <feComposite
+         operator="out"
+         in="SourceGraphic"
+         in2="offset-blur"
+         result="inverse"
+         id="feComposite13" />
+      <feFlood
+         flood-color="black"
+         flood-opacity="0.6"
+         result="color"
+         id="feFlood13" />
+      <feComposite
+         operator="in"
+         in="color"
+         in2="inverse"
+         result="shadow"
+         id="feComposite14" />
+      <feComposite
+         operator="over"
+         in="shadow"
+         in2="SourceGraphic"
+         id="feComposite15" />
+    </filter>
+  </defs>
+  <rect
+     x="8"
+     y="8"
+     width="112"
+     height="112"
+     rx="10"
+     fill="url(#bgGrad)"
+     id="rect15" />
+  <rect
+     x="18"
+     y="18"
+     width="26"
+     height="26"
+     rx="6"
+     fill="url(#redGrad)"
+     filter="url(#shadow)"
+     id="rect16" />
+  <rect
+     x="51"
+     y="18"
+     width="26"
+     height="26"
+     rx="6"
+     fill="url(#redGrad)"
+     filter="url(#shadow)"
+     id="rect17" />
+  <rect
+     x="84"
+     y="18"
+     width="26"
+     height="26"
+     rx="6"
+     fill="url(#redGrad)"
+     filter="url(#shadow)"
+     id="rect18" />
+  <rect
+     x="18"
+     y="51"
+     width="26"
+     height="26"
+     rx="6"
+     fill="url(#greenIndent)"
+     filter="url(#insetShadow)"
+     id="rect19" />
+  <rect
+     x="51"
+     y="51"
+     width="26"
+     height="26"
+     rx="6"
+     fill="url(#redGrad)"
+     filter="url(#shadow)"
+     id="rect20" />
+  <rect
+     x="84"
+     y="51"
+     width="26"
+     height="26"
+     rx="6"
+     fill="url(#yellowIndent)"
+     filter="url(#insetShadow)"
+     id="rect21" />
+  <rect
+     x="18"
+     y="84"
+     width="26"
+     height="26"
+     rx="6"
+     fill="url(#blueIndent)"
+     filter="url(#insetShadow)"
+     id="rect22" />
+  <rect
+     x="51"
+     y="84"
+     width="26"
+     height="26"
+     rx="6"
+     fill="url(#redGrad)"
+     filter="url(#shadow)"
+     id="rect23" />
+  <rect
+     x="84"
+     y="84"
+     width="26"
+     height="26"
+     rx="6"
+     fill="url(#orangeIndent)"
+     filter="url(#insetShadow)"
+     id="rect24" />
 </svg>
