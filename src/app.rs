@@ -6,14 +6,13 @@ use crate::timer::{Status, Timer, format_from_ms};
 use cosmic::app::context_drawer::{self, ContextDrawer};
 use cosmic::cosmic_config::{Config, ConfigGet, ConfigSet};
 use cosmic::iced::{self, Alignment, Border, Event, Length, Subscription, event, keyboard, time};
-use cosmic::iced_widget::scrollable;
 use cosmic::prelude::*;
 use cosmic::widget::{
-    self, Space, about, about::About, container, dropdown, menu, nav_bar, settings,
+    self, Space, about, about::About, container, dropdown, menu, nav_bar, scrollable, settings,
 };
-use regex::Regex;
 use cube_scrambler::generate_scramble;
 use hrsw::Stopwatch;
+use regex::Regex;
 use std::collections::{HashMap, VecDeque};
 use std::time::Duration;
 use tracing;
@@ -32,7 +31,7 @@ pub struct AppModel {
     nav: nav_bar::Model,
     key_binds: HashMap<menu::KeyBind, MenuAction>,
     config: Config,
-	state: Config,
+    state: Config,
     dialog_pages: VecDeque<DialogPage>,
     space_pressed: bool,
     current_cube: Cube,
@@ -102,11 +101,11 @@ impl cosmic::Application for AppModel {
             .get::<Record>(current_cube.config_key())
             .unwrap_or_default();
 
-		// trim the last 'xN' of current_cube to pass to cube_scrambler, used in current_scramble
-		// and duplicated in rescramble(){}, because I haven't found a way to reuse the same code
-		let cube_str = current_cube.as_string().clone();
-		let re = Regex::new(r"x\d+$").unwrap();
-		let normalized = re.replace(&cube_str, "").to_string();
+        // trim the last 'xN' of current_cube to pass to cube_scrambler, used in current_scramble
+        // and duplicated in rescramble(){}, because I haven't found a way to reuse the same code
+        let cube_str = current_cube.as_string().clone();
+        let re = Regex::new(r"x\d+$").unwrap();
+        let normalized = re.replace(&cube_str, "").to_string();
 
         let mut app = AppModel {
             core,
@@ -114,13 +113,12 @@ impl cosmic::Application for AppModel {
             nav,
             key_binds: HashMap::new(),
             config,
-			state,
+            state,
             dialog_pages: VecDeque::new(),
             current_cube: current_cube.clone(),
             cube_options,
             cube_options_labels,
-			current_scramble: generate_scramble(None, Some(normalized))
-				.unwrap_or_default(),
+            current_scramble: generate_scramble(None, Some(normalized)).unwrap_or_default(),
             timer: Timer::default(),
             space_pressed: false,
             record,
@@ -172,7 +170,7 @@ impl cosmic::Application for AppModel {
         };
 
         // Start container
-        let mut page_content = widget::column()
+        let mut page_content = widget::column([])
             .padding(0.)
             .width(Length::Fill)
             .align_x(Alignment::Center);
@@ -190,7 +188,7 @@ impl cosmic::Application for AppModel {
 
         page_content = page_content
             .push(
-                widget::row()
+                widget::row([])
                     .push(dropdown(
                         &self.cube_options_labels,
                         Some(selected_cube),
@@ -274,7 +272,7 @@ impl cosmic::Application for AppModel {
 
             // Averages
             solve_list = solve_list.add(
-                widget::row()
+                widget::row([])
                     .push(
                         widget::text::title4(ao5_label + &ao5_time)
                             .size(15)
@@ -306,7 +304,7 @@ impl cosmic::Application for AppModel {
             let mut solve_i = 0;
             for solve in &self.record.solves {
                 solve_list = solve_list.add(
-                    widget::row()
+                    widget::row([])
                         .push(
                             container(
                                 widget::text::body(format!("{}", solve.scramble.join(" ")))
@@ -525,14 +523,12 @@ impl AppModel {
         }
     }
 
-	fn rescramble(&mut self) {
-		let cube_str = self.current_cube.as_string().clone();
-		let re = Regex::new(r"x\d+$").unwrap();
-		let normalized = re.replace(&cube_str, "").to_string();
-		self.current_scramble =
-			generate_scramble(None, Some(normalized))
-				.unwrap_or_default();
-	}
+    fn rescramble(&mut self) {
+        let cube_str = self.current_cube.as_string().clone();
+        let re = Regex::new(r"x\d+$").unwrap();
+        let normalized = re.replace(&cube_str, "").to_string();
+        self.current_scramble = generate_scramble(None, Some(normalized)).unwrap_or_default();
+    }
     fn save_record(&mut self) {
         let _ = self
             .config
