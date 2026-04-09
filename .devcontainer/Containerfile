@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libegl1-mesa-dev \
     wayland-protocols \
     just \
+    python3-aiohttp \
+    python3-toml \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
