@@ -28,7 +28,7 @@
     </p>
     <ul>
 		<li>Generate random-move scrambles for cubes from 2x2 to 7x7</li>
-        <li xml:lang="cs">Generování scramble podle pravidel WCA</li>
+		<li xml:lang="cs">Generování scramble s náhodnými tahy pro kostky od 2x2 do 7x7</li>
         <li>Time your solves with a StackMat style timer</li>
         <li xml:lang="cs">Měření časů řešení pomocí časovače ve stylu StackMat</li>
         <li>Keep track of your times and averages</li>
@@ -44,6 +44,7 @@
       <screenshot type="default" xml:lang="en">
         <image>https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screenshots/screenshot.png</image>
         <caption>Main app view with scramble and timer. Hold Space to start.</caption>
+        <caption xml:lang="cs">Hlavní zobrazení aplikace se scramblem a časovačem. Podržte mezerník pro spuštění.</caption>
       </screenshot>
       <screenshot type="dark" xml:lang="en">
         <image>https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screenshots/screen_dark_1.png</image>
