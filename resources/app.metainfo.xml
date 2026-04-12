@@ -24,15 +24,15 @@
       A speed cubing timer for the COSMIC™ desktop, built with libcosmic and designed for simple yet effective solve timing.
     </p>
     <p xml:lang="cs">
-        Časovač pro skládání kostek (speedcubing) vytvořený pomocí libcosmic a navržený pro jednoduché, ale efektivní měření časů řešení.
+      Časovač pro skládání kostek (speedcubing) vytvořený pomocí libcosmic a navržený pro jednoduché, ale efektivní měření časů řešení.
     </p>
     <ul>
-		<li>Generate random-move scrambles for cubes from 2x2 to 7x7</li>
-        <li xml:lang="cs">Generování scramble podle pravidel WCA</li>
-        <li>Time your solves with a StackMat style timer</li>
-        <li xml:lang="cs">Měření časů řešení pomocí časovače ve stylu StackMat</li>
-        <li>Keep track of your times and averages</li>
-        <li xml:lang="cs">Sledování vašich časů a průměrů</li>
+	  <li>Generate random-move scrambles for cubes from 2x2 to 7x7</li>
+	  <li xml:lang="cs">Generování scramble s náhodnými tahy pro kostky od 2x2 do 7x7</li>
+      <li>Time your solves with a StackMat style timer</li>
+      <li xml:lang="cs">Měření časů řešení pomocí časovače ve stylu StackMat</li>
+      <li>Keep track of your times and averages</li>
+      <li xml:lang="cs">Sledování vašich časů a průměrů</li>
     </ul>
   </description>
   <icon type="stock">uk.co.cappsy.Tesseract.svg</icon>
@@ -41,20 +41,21 @@
     <color type="primary" scheme_preference="dark">#842e2e</color>
   </branding>
   <screenshots>
-      <screenshot type="default" xml:lang="en">
-        <image>https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screenshots/screenshot.png</image>
-        <caption>Main app view with scramble and timer. Hold Space to start.</caption>
-      </screenshot>
-      <screenshot type="dark" xml:lang="en">
-        <image>https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screenshots/screen_dark_1.png</image>
-        <caption>Main app view with scramble, timer and solve record (default COSMIC dark mode)</caption>
-        <caption xml:lang="cs">Hlavní zobrazení aplikace se scramblem, časovačem a záznamem řešení (výchozí tmavý režim COSMIC)</caption>
-      </screenshot>
-      <screenshot type="light" xml:lang="en">
-        <image>https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screenshots/screen_light_1.png</image>
-        <caption>Main app view with scramble, timer and solve record  (default COSMIC light mode)</caption>
-        <caption xml:lang="cs">Hlavní zobrazení aplikace se scramblem, časovačem a záznamem řešení (výchozí světlý režim COSMIC)</caption>
-      </screenshot>
+    <screenshot type="default" xml:lang="en">
+      <image>https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screenshots/screenshot.png</image>
+      <caption>Main app view with scramble and timer. Hold Space to start.</caption>
+      <caption xml:lang="cs">Hlavní zobrazení aplikace se scramblem a časovačem. Podržte mezerník pro spuštění.</caption>
+    </screenshot>
+    <screenshot type="dark" xml:lang="en">
+      <image>https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screenshots/screen_dark_1.png</image>
+      <caption>Main app view with scramble, timer and solve record (default COSMIC dark mode)</caption>
+      <caption xml:lang="cs">Hlavní zobrazení aplikace se scramblem, časovačem a záznamem řešení (výchozí tmavý režim COSMIC)</caption>
+    </screenshot>
+    <screenshot type="light" xml:lang="en">
+      <image>https://raw.githubusercontent.com/cappsyco/tesseract/main/resources/screenshots/screen_light_1.png</image>
+      <caption>Main app view with scramble, timer and solve record  (default COSMIC light mode)</caption>
+      <caption xml:lang="cs">Hlavní zobrazení aplikace se scramblem, časovačem a záznamem řešení (výchozí světlý režim COSMIC)</caption>
+    </screenshot>
   </screenshots>
   <url type="vcs-browser">https://github.com/cappsyco/tesseract</url>
   <launchable type="desktop-id">uk.co.cappsy.Tesseract.desktop</launchable>
@@ -80,15 +81,15 @@
       <description>
         <p>0.3.2</p>
         <ul>
-            <li>Further libcosmic rebasing</li>
-            <li>New logo</li>
+          <li>Further libcosmic rebasing</li>
+          <li>New logo</li>
         </ul>
         <p>0.3.1</p>
         <ul>
-            <li>Rebased to the newest version of libcosmic and refactored some styles and input handling as a result. The latter will help with adding mouse and touch inputs for timer control in the future.</li>
-            <li>Started storing a timestamp for solves to power a later 'solves over time' stats screen</li>
-            <li>Added Czech, Portuguese and Esperanto translations!</li>
-            <li>Many more behind the scenes refactors and display tweaks</li>
+          <li>Rebased to the newest version of libcosmic and refactored some styles and input handling as a result. The latter will help with adding mouse and touch inputs for timer control in the future.</li>
+          <li>Started storing a timestamp for solves to power a later 'solves over time' stats screen</li>
+          <li>Added Czech, Portuguese and Esperanto translations!</li>
+          <li>Many more behind the scenes refactors and display tweaks</li>
         </ul>
         <p>Thank you to contributors DanielKaleby and lorduskordus</p>
       </description>

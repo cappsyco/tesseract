@@ -7,6 +7,7 @@ page-id = Stránka { $num }
 git-description = Git commit {$hash} dne {$date}
 your-solving-record = Váš záznam řešení
 repository = Repozitář
+contributors = Přispěvatelé
 cancel = Zrušit
 remove = Odstranit
 remove-solve = Odstranit toto řešení
