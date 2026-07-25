@@ -77,8 +77,12 @@
     <keyword>COSMIC</keyword>
   </keywords>
   <releases>
-    <release version="0.3.2" date="2026-04-09">
+    <release version="0.3.3" date="2026-04-09">
       <description>
+        <p>0.3.3</p>
+        <ul>
+            <li>Dependancy updates</li>
+        </ul>
         <p>0.3.2</p>
         <ul>
           <li>Further libcosmic rebasing</li>
