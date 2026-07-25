@@ -8,18 +8,18 @@ repository = "https://github.com/cappsyco/tesseract"
 authors = ["Jonathan Capps", "Jonathan Capps <cappsy@gmail.com>"]
 
 [dependencies]
-futures-util = "0.3.32"
-i18n-embed-fl = "0.10.0"
-open = "5.3.3"
-rand = "0.10.0"
-regex = "1.12.3"
-rust-embed = "8.11.0"
+futures-util = "0.3.33"
+i18n-embed-fl = "0.10.1"
+open = "5.4.0"
+rand = "0.10.2"
+regex = "1.13.1"
+rust-embed = "8.12.0"
 strum = { version = "0.28.0", features = ["derive"] }
-tokio = { version = "1.50.0", features = ["full"] }
+tokio = { version = "1.53.1", features = ["full"] }
 hrsw = "0.1.2"
 tracing = { version = "0.1.44", features = ["log"] }
-cube_scrambler = "0.2.1"
-serde = "1.0.228"
+cube_scrambler = "0.3.0"
+serde = "1.0.229"
 
 [dependencies.i18n-embed]
 version = "0.16.0"
