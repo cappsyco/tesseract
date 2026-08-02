@@ -1,4 +1,5 @@
-name := 'tesseract'
+name-src := 'tesseract'
+name-dst := 'tesseract-timer'
 appid := 'uk.co.cappsy.Tesseract'
 
 rootdir := ''
@@ -8,9 +9,9 @@ flatpak-prefix := '/app'
 base-dir := absolute_path(clean(rootdir / prefix))
 flatpak-base-dir := absolute_path(clean(rootdir / flatpak-prefix))
 
-bin-src := 'target' / 'release' / name
-bin-dst := base-dir / 'bin' / name
-flatpak-bin-dst := flatpak-base-dir / 'bin' / name
+bin-src := 'target' / 'release' / name-src
+bin-dst := base-dir / 'bin' / name-dst
+flatpak-bin-dst := flatpak-base-dir / 'bin' / name-dst
 
 desktop := appid + '.desktop'
 desktop-src := 'resources' / desktop
