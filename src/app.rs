@@ -2,7 +2,7 @@
 
 use crate::fl;
 use crate::record::{Cube, Record, Solve};
-use crate::timer::{Status, Timer, format_from_ms};
+use crate::timer::{Status, Timer};
 use cosmic::app::context_drawer::{self, ContextDrawer};
 use cosmic::cosmic_config::{Config, ConfigGet, ConfigSet};
 use cosmic::iced::{self, Alignment, Border, Event, Length, Subscription, event, keyboard, time};
@@ -251,19 +251,9 @@ impl cosmic::Application for AppModel {
             let ao5_label: String = String::from("AO5: ");
             let ao12_label: String = String::from("AO12: ");
             let ao100_label: String = String::from("AO100: ");
-            let ao5_time = match self.record.ao5 {
-                Some(ms) => format_from_ms(ms),
-                _ => String::from("N/A"),
-            };
-            let ao12_time = match self.record.ao12 {
-                Some(ms) => format_from_ms(ms),
-                _ => String::from("N/A"),
-            };
-            let ao100_time = match self.record.ao100 {
-                Some(ms) => format_from_ms(ms),
-                _ => String::from("N/A"),
-            };
-
+            let ao5_time = self.record.ao5.to_display();
+            let ao12_time = self.record.ao12.to_display();
+            let ao100_time = self.record.ao100.to_display();
             // Averages
             solve_list = solve_list.add(
                 widget::row([])
@@ -483,6 +473,7 @@ impl cosmic::Application for AppModel {
             }
             Message::RemoveSolve(uid) => {
                 self.record.solves.remove(uid);
+                self.record.recalc_averages();
                 self.save_record();
                 self.dialog_pages.pop_front();
             }
