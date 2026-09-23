@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
 
 mod app;
+mod cube;
 mod i18n;
-mod record;
+mod records;
 mod timer;
 
 fn main() -> cosmic::iced::Result {

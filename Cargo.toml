@@ -20,6 +20,8 @@ hrsw = "0.1.2"
 tracing = { version = "0.1.44", features = ["log"] }
 cube_scrambler = "0.3.0"
 serde = "1.0.229"
+rusqlite = { version = "0.32", features = ["bundled"] }
+directories = "5"
 
 [dependencies.i18n-embed]
 version = "0.16.0"

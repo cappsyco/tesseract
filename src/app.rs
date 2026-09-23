@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 use crate::fl;
-use crate::record::{Cube, Record, Solve};
+use crate::cube::Cube;
+use crate::records::{self, Records};
 use crate::timer::{Status, Timer};
 use cosmic::app::context_drawer::{self, ContextDrawer};
 use cosmic::cosmic_config::{Config, ConfigGet, ConfigSet};
@@ -21,7 +22,7 @@ const APP_ICON: &[u8] = include_bytes!("../resources/icons/hicolor/scalable/apps
 #[derive(Clone, Debug)]
 pub enum DialogPage {
     RemoveAllSolves,
-    RemoveSolve(usize),
+    RemoveSolve(i64),
 }
 
 pub struct AppModel {
@@ -39,7 +40,12 @@ pub struct AppModel {
     cube_options_labels: Vec<String>,
     current_scramble: Vec<String>,
     timer: Timer,
-    record: Record,
+    records: Records,
+    solves: Vec<records::Solve>,
+    pb: Option<i64>,
+    ao5: records::Average,
+    ao12: records::Average,
+    ao100: records::Average,
     stopwatch: Stopwatch,
     about_page: About,
 }
@@ -56,8 +62,8 @@ pub enum Message {
     CubeUpdate(usize),
     DialogCancel,
     DialogRemoveAllSolves,
-    DialogRemoveSolve(usize),
-    RemoveSolve(usize),
+    DialogRemoveSolve(i64),
+    RemoveSolve(i64),
     RemoveAllSolves,
 }
 
@@ -98,7 +104,11 @@ impl cosmic::Application for AppModel {
             });
 
         // cube values
-        let current_cube = state.get::<Cube>("current_cube").unwrap_or_default();
+        let current_cube = state
+            .get::<String>("current_cube")
+            .ok()
+            .and_then(|id| Cube::from_id(&id))
+            .unwrap_or_default();
         let cube_options = vec![
             Cube::Two,
             Cube::Three,
@@ -109,10 +119,12 @@ impl cosmic::Application for AppModel {
         ];
         let cube_options_labels: Vec<String> = cube_options.iter().map(|t| t.as_string()).collect();
 
-        // load record for selected cube
-        let record = config
-            .get::<Record>(current_cube.config_key())
-            .unwrap_or_default();
+        // open the solves database
+        let data_dir = directories::ProjectDirs::from("uk.co", "cappsy", "Tesseract-timer")
+            .expect("could not determine data directory");
+        std::fs::create_dir_all(data_dir.data_dir()).expect("failed to create data directory");
+        let records = Records::open(&data_dir.data_dir().join("records.db"))
+            .expect("failed to open records database");
 
         let mut app = AppModel {
             core,
@@ -130,11 +142,17 @@ impl cosmic::Application for AppModel {
             timer: Timer::default(),
             space_pressed: false,
             keybinds,
-            record,
+            records,
+            solves: Vec::new(),
+            pb: None,
+            ao5: records::Average::Incomplete,
+            ao12: records::Average::Incomplete,
+            ao100: records::Average::Incomplete,
             stopwatch: Stopwatch::new(),
             about_page: build_about(),
         };
 
+        app.refresh_stats(); // populates solves/pb/ao5/12/100 for the first time
         let command = app.update_title();
 
         (app, command)
@@ -261,14 +279,14 @@ impl cosmic::Application for AppModel {
         );
 
         // Record
-        if !self.record.solves.is_empty() {
+        if !self.solves.is_empty() {
             let mut solve_list = settings::section();
             let ao5_label: String = String::from("AO5: ");
             let ao12_label: String = String::from("AO12: ");
             let ao100_label: String = String::from("AO100: ");
-            let ao5_time = self.record.ao5.to_display();
-            let ao12_time = self.record.ao12.to_display();
-            let ao100_time = self.record.ao100.to_display();
+            let ao5_time = self.ao5.to_display();
+            let ao12_time = self.ao12.to_display();
+            let ao100_time = self.ao100.to_display();
             // Averages
             solve_list = solve_list.add(
                 widget::row([])
@@ -300,13 +318,12 @@ impl cosmic::Application for AppModel {
             );
 
             // Solves
-            let mut solve_i = 0;
-            for solve in &self.record.solves {
+            for solve in &self.solves {
                 solve_list = solve_list.add(
                     widget::row([])
                         .push(
                             container(
-                                widget::text::body(format!("{}", solve.scramble.join(" ")))
+                                widget::text::body(solve.scramble.clone())
                                     .size(18)
                                     .width(Length::Fill),
                             )
@@ -315,7 +332,7 @@ impl cosmic::Application for AppModel {
                         )
                         .push(
                             container(
-                                widget::text::body(format!("{}", solve.time()))
+                                widget::text::body(solve.time())
                                     .size(22)
                                     .align_x(Alignment::Center)
                                     .class(cosmic::theme::style::Text::Color(
@@ -333,7 +350,7 @@ impl cosmic::Application for AppModel {
                                 widget::button::icon(
                                     widget::icon::from_name("edit-delete-symbolic").size(100),
                                 )
-                                .on_press(Message::DialogRemoveSolve(solve_i)),
+                                .on_press(Message::DialogRemoveSolve(solve.id))
                             )
                             .padding([
                                 ((active_theme.cosmic().space_s() / 2) + 2),
@@ -343,7 +360,6 @@ impl cosmic::Application for AppModel {
                             ]),
                         ),
                 );
-                solve_i += 1;
             }
 
             page_content = page_content
@@ -394,10 +410,10 @@ impl cosmic::Application for AppModel {
         let dialog_page = self.dialog_pages.front()?;
 
         let dialog = match dialog_page {
-            DialogPage::RemoveSolve(i) => widget::dialog()
+            DialogPage::RemoveSolve(id) => widget::dialog()
                 .title(fl!("remove-solve"))
                 .primary_action(
-                    widget::button::destructive(fl!("remove")).on_press(Message::RemoveSolve(*i)),
+                    widget::button::destructive(fl!("remove")).on_press(Message::RemoveSolve(*id)),
                 )
                 .secondary_action(
                     widget::button::standard(fl!("cancel")).on_press(Message::DialogCancel),
@@ -438,8 +454,8 @@ impl cosmic::Application for AppModel {
                 self.dialog_pages.pop_front();
             }
 
-            Message::DialogRemoveSolve(i) => {
-                self.dialog_pages.push_front(DialogPage::RemoveSolve(i));
+            Message::DialogRemoveSolve(id) => {
+                self.dialog_pages.push_front(DialogPage::RemoveSolve(id));
             }
 
             Message::DialogRemoveAllSolves => {
@@ -454,17 +470,22 @@ impl cosmic::Application for AppModel {
                 if self.is_bound_key("cancel", &key) {
                     self.cancel_timer();
                 } else if self.is_bound_key("dnf", &key) {
-                    self.set_last_solve_dnf(true);
-                } else if self.is_bound_key("normal", &key) && self.timer.status == Status::Stopped {
-                    self.set_last_solve_dnf(false);
+                    self.set_last_solve_penalty(-1);
+                } else if self.is_bound_key("normal", &key) {
+                    self.set_last_solve_penalty(0);
+                } else if self.is_bound_key("penalty_cycle", &key) {
+                    self.cycle_last_solve_penalty();
                 } else if self.is_bound_key("start_stop", &key) {
                     self.space_pressed = true;
                     if self.timer.status == Status::Running {
                         self.timer.time = self.stopwatch.elapsed().as_millis() as u32;
-                        let solve = Solve::new(self.timer.time, &self.current_scramble);
+                        let _ = self.records.log(
+                            self.current_cube.config_key(),
+                            self.timer.time as i64,
+                            &self.current_scramble.join(" "),
+                        );
                         self.timer.status = Status::Stopped;
-                        self.record.add_solve(solve);
-                        self.save_record();
+                        self.refresh_stats();
                         self.rescramble();
                     } else if self.timer.status == Status::Stopped {
                         self.timer.status = Status::Hold;
@@ -491,25 +512,22 @@ impl cosmic::Application for AppModel {
             }
             Message::CubeUpdate(uid) => {
                 self.current_cube = self.cube_options[uid].clone();
-                self.record = self
-                    .config
-                    .get::<Record>(self.current_cube.config_key())
-                    .unwrap_or_default();
-                let _ = self.state.set("current_cube", &self.current_cube);
+                let _ = self.state.set("current_cube", self.current_cube.config_key());
+                self.refresh_stats();
                 self.rescramble();
             }
             Message::Rescramble => {
                 self.rescramble();
             }
-            Message::RemoveSolve(uid) => {
-                self.record.solves.remove(uid);
-                self.record.recalc_averages();
-                self.save_record();
+            Message::RemoveSolve(id) => {
+                let _ = self.records.delete(id);
+                self.refresh_stats();
                 self.dialog_pages.pop_front();
             }
+
             Message::RemoveAllSolves => {
-                self.record.solves = vec![];
-                self.save_record();
+                let _ = self.records.delete_all(self.current_cube.config_key());
+                self.refresh_stats();
                 self.dialog_pages.pop_front();
             }
         }
@@ -521,6 +539,8 @@ impl cosmic::Application for AppModel {
         self.update_title()
     }
 }
+
+const PENALTY_STEP_MS: i64 = 2000;
 
 impl AppModel {
     pub fn update_title(&mut self) -> Task<cosmic::Action<Message>> {
@@ -542,14 +562,11 @@ impl AppModel {
         self.current_scramble =
             generate_scramble(None, Some(self.current_cube.as_string())).unwrap_or_default();
     }
-    fn save_record(&mut self) {
-        let _ = self
-            .config
-            .set(self.current_cube.config_key(), &self.record);
-    }
+
     fn is_bound_key(&self, action: &str, key: &str) -> bool {
     self.keybinds.get(action).map(|k| k.as_str()) == Some(key)
     }
+
     fn cancel_timer(&mut self) {
         match self.timer.status {
             Status::Hold | Status::Ready => {
@@ -563,13 +580,30 @@ impl AppModel {
             Status::Stopped => {}
         }
     }
-    fn set_last_solve_dnf(&mut self, dnf: bool) {
-    if let Some(last) = self.record.solves.first_mut() {
-        last.dnf = dnf;
-        self.record.recalc_averages();
-        self.save_record();
+
+    fn refresh_stats(&mut self) {
+        let event_id = self.current_cube.config_key();
+        self.solves = self.records.latest(event_id, 100).unwrap_or_default();
+        self.pb = self.records.personal_best(event_id).unwrap_or(None);
+        self.ao5 = self.records.average(event_id, 5).unwrap_or(records::Average::Incomplete);
+        self.ao12 = self.records.average(event_id, 12).unwrap_or(records::Average::Incomplete);
+        self.ao100 = self.records.average(event_id, 100).unwrap_or(records::Average::Incomplete);
     }
-}
+
+    fn set_last_solve_penalty(&mut self, penalty_ms: i64) {
+        if let Some(last) = self.solves.first() {
+            let _ = self.records.set_penalty(last.id, penalty_ms);
+            self.refresh_stats();
+        }
+    }
+
+    fn cycle_last_solve_penalty(&mut self) {
+        if let Some(last) = self.solves.first() {
+            let next = if last.penalty_ms >= 0 { last.penalty_ms + PENALTY_STEP_MS } else { PENALTY_STEP_MS };
+            let _ = self.records.set_penalty(last.id, next);
+            self.refresh_stats();
+        }
+    }
 }
 
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
