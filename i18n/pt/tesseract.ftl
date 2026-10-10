@@ -1,12 +1,13 @@
 app-title = Tesseract
 about = Sobre
-view = Ver
+view = Exibir
 hold-space-to-start = Segure espaço para iniciar
 tap-space-to-stop = Aperte espaço para parar
 page-id = Página { $num }
 git-description = Git commit {$hash} em {$date}
 your-solving-record = Seu registro de solves
 repository = Repositório
+contributors = Contribuidores
 cancel = Cancelar
 remove = Remover
 remove-solve = Remover esta solve
