@@ -76,3 +76,4 @@ Customizable in `~/.config/cosmic/uk.co.cappsy.Tesseract/v1/keybinds`
 * [fluent](https://projectfluent.org/)
 * [fluent-guide](https://projectfluent.org/fluent/guide/hello.html)
 * [iso-codes](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)
+* [Segment7](https://fontlibrary.org/en/font/segment7) - Timer font by Cedric Knight, licensed under the [SIL Open Font License](http://scripts.sil.org/OFL)
