@@ -120,6 +120,11 @@ impl cosmic::Application for AppModel {
 
         let app_theme = config.get::<AppTheme>("app_theme").unwrap_or_default();
 
+        let mut timer = Timer::default();
+        if let Some(last_solve) = record.solves.first() {
+            timer.time = last_solve.time;
+        }
+
         let mut app = AppModel {
             core,
             context_page: ContextPage::default(),
@@ -133,7 +138,7 @@ impl cosmic::Application for AppModel {
             cube_options_labels,
             current_scramble: generate_scramble(None, Some(current_cube.as_string()))
                 .unwrap_or_default(),
-            timer: Timer::default(),
+            timer,
             space_pressed: false,
             keybinds,
             record,
