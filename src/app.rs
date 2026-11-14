@@ -12,7 +12,9 @@ use cosmic::widget::{
 };
 use cube_scrambler::generate_scramble;
 use hrsw::Stopwatch;
+use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, VecDeque};
+use std::sync::Arc;
 use std::time::Duration;
 use tracing;
 
@@ -42,11 +44,13 @@ pub struct AppModel {
     record: Record,
     stopwatch: Stopwatch,
     about_page: About,
+    app_theme: AppTheme,
 }
 
 #[derive(Debug, Clone)]
 pub enum Message {
     ToggleContextPage(ContextPage),
+    AppThemeChange(usize),
     Rescramble,
     TimerTick,
     KeyPressed(String),
@@ -114,6 +118,8 @@ impl cosmic::Application for AppModel {
             .get::<Record>(current_cube.config_key())
             .unwrap_or_default();
 
+        let app_theme = config.get::<AppTheme>("app_theme").unwrap_or_default();
+
         let mut app = AppModel {
             core,
             context_page: ContextPage::default(),
@@ -133,9 +139,13 @@ impl cosmic::Application for AppModel {
             record,
             stopwatch: Stopwatch::new(),
             about_page: build_about(),
+            app_theme,
         };
 
-        let command = app.update_title();
+        let command = Task::batch(vec![
+            app.update_title(),
+            cosmic::command::set_theme(app.app_theme.theme()),
+        ]);
 
         (app, command)
     }
@@ -145,11 +155,22 @@ impl cosmic::Application for AppModel {
             menu::root(fl!("view")).apply(Element::from),
             menu::items(
                 &self.key_binds,
-                vec![menu::Item::Button(fl!("about"), None, MenuAction::About)],
+                vec![
+                    menu::Item::Button(fl!("settings"), None, MenuAction::Settings),
+                    menu::Item::Button(fl!("about"), None, MenuAction::About),
+                ],
             ),
         )]);
 
         vec![menu_bar.into()]
+    }
+
+    fn header_end(&self) -> Vec<Element<'_, Self::Message>> {
+        vec![
+            widget::button::icon(widget::icon::from_name("preferences-system-symbolic"))
+                .on_press(Message::ToggleContextPage(ContextPage::Settings))
+                .into(),
+        ]
     }
 
     fn context_drawer(&self) -> Option<context_drawer::ContextDrawer<'_, Self::Message>> {
@@ -162,6 +183,14 @@ impl cosmic::Application for AppModel {
                 title: Some(fl!("about").into()),
                 content: about(&self.about_page, |s| Message::OpenUrl(s.to_string())),
                 on_close: Message::ToggleContextPage(ContextPage::About),
+                header: None,
+                actions: None,
+                footer: None,
+            }),
+            ContextPage::Settings => Some(ContextDrawer {
+                title: Some(fl!("settings").into()),
+                content: self.settings_view(),
+                on_close: Message::ToggleContextPage(ContextPage::Settings),
                 header: None,
                 actions: None,
                 footer: None,
@@ -455,7 +484,8 @@ impl cosmic::Application for AppModel {
                     self.cancel_timer();
                 } else if self.is_bound_key("dnf", &key) {
                     self.set_last_solve_dnf(true);
-                } else if self.is_bound_key("normal", &key) && self.timer.status == Status::Stopped {
+                } else if self.is_bound_key("normal", &key) && self.timer.status == Status::Stopped
+                {
                     self.set_last_solve_dnf(false);
                 } else if self.is_bound_key("start_stop", &key) {
                     self.space_pressed = true;
@@ -488,6 +518,11 @@ impl cosmic::Application for AppModel {
                 if self.timer.status == Status::Hold {
                     self.timer.status = Status::Ready;
                 }
+            }
+            Message::AppThemeChange(index) => {
+                self.app_theme = AppTheme::ALL[index];
+                let _ = self.config.set("app_theme", &self.app_theme);
+                return cosmic::command::set_theme(self.app_theme.theme());
             }
             Message::CubeUpdate(uid) => {
                 self.current_cube = self.cube_options[uid].clone();
@@ -548,7 +583,7 @@ impl AppModel {
             .set(self.current_cube.config_key(), &self.record);
     }
     fn is_bound_key(&self, action: &str, key: &str) -> bool {
-    self.keybinds.get(action).map(|k| k.as_str()) == Some(key)
+        self.keybinds.get(action).map(|k| k.as_str()) == Some(key)
     }
     fn cancel_timer(&mut self) {
         match self.timer.status {
@@ -564,23 +599,72 @@ impl AppModel {
         }
     }
     fn set_last_solve_dnf(&mut self, dnf: bool) {
-    if let Some(last) = self.record.solves.first_mut() {
-        last.dnf = dnf;
-        self.record.recalc_averages();
-        self.save_record();
+        if let Some(last) = self.record.solves.first_mut() {
+            last.dnf = dnf;
+            self.record.recalc_averages();
+            self.save_record();
+        }
     }
 }
+
+impl AppModel {
+    fn settings_view(&self) -> Element<'_, Message> {
+        let theme_labels = vec![fl!("theme-system"), fl!("theme-dark"), fl!("theme-light")];
+        let selected = AppTheme::ALL.iter().position(|t| *t == self.app_theme);
+
+        settings::view_column(vec![
+            settings::section()
+                .title(fl!("appearance"))
+                .add(settings::item(
+                    fl!("app-theme"),
+                    dropdown(theme_labels, selected, Message::AppThemeChange),
+                ))
+                .into(),
+        ])
+        .into()
+    }
 }
 
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
 pub enum ContextPage {
     #[default]
     About,
+    Settings,
+}
+
+#[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+pub enum AppTheme {
+    #[default]
+    System,
+    Dark,
+    Light,
+}
+
+impl AppTheme {
+    pub const ALL: [AppTheme; 3] = [AppTheme::System, AppTheme::Dark, AppTheme::Light];
+
+    pub fn theme(self) -> cosmic::Theme {
+        let mut theme = match self {
+            AppTheme::System => return cosmic::theme::system_preference(),
+            AppTheme::Dark => cosmic::theme::system_dark(),
+            AppTheme::Light => {
+                let theme = cosmic::theme::system_light();
+                if theme.cosmic().is_dark {
+                    cosmic::theme::Theme::system(Arc::new(cosmic::theme::COSMIC_LIGHT.clone()))
+                } else {
+                    theme
+                }
+            }
+        };
+        theme.theme_type.prefer_dark(Some(self == AppTheme::Dark));
+        theme
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum MenuAction {
     About,
+    Settings,
 }
 
 impl menu::action::MenuAction for MenuAction {
@@ -589,6 +673,7 @@ impl menu::action::MenuAction for MenuAction {
     fn message(&self) -> Self::Message {
         match self {
             MenuAction::About => Message::ToggleContextPage(ContextPage::About),
+            MenuAction::Settings => Message::ToggleContextPage(ContextPage::Settings),
         }
     }
 }
