@@ -18,3 +18,6 @@ app-theme = Application theme
 theme-system = Match system
 theme-dark = Dark
 theme-light = Light
+timer = Timer
+timer-font = Timer font
+timer-font-default = Default

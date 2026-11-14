@@ -45,12 +45,14 @@ pub struct AppModel {
     stopwatch: Stopwatch,
     about_page: About,
     app_theme: AppTheme,
+    timer_font: TimerFont,
 }
 
 #[derive(Debug, Clone)]
 pub enum Message {
     ToggleContextPage(ContextPage),
     AppThemeChange(usize),
+    TimerFontChange(usize),
     Rescramble,
     TimerTick,
     KeyPressed(String),
@@ -119,6 +121,7 @@ impl cosmic::Application for AppModel {
             .unwrap_or_default();
 
         let app_theme = config.get::<AppTheme>("app_theme").unwrap_or_default();
+        let timer_font = config.get::<TimerFont>("timer_font").unwrap_or_default();
 
         let mut app = AppModel {
             core,
@@ -140,6 +143,7 @@ impl cosmic::Application for AppModel {
             stopwatch: Stopwatch::new(),
             about_page: build_about(),
             app_theme,
+            timer_font,
         };
 
         let command = Task::batch(vec![
@@ -244,6 +248,14 @@ impl cosmic::Application for AppModel {
             ));
 
         // Timer
+        let mut timer_text = widget::text::text(self.timer.display())
+            .size(140)
+            .width(Length::Fill)
+            .align_x(Alignment::Center)
+            .shaping(cosmic::iced::advanced::text::Shaping::Advanced);
+        if let Some(font) = self.timer_font.font() {
+            timer_text = timer_text.font(font);
+        }
         let timer_status = self.timer.status.clone();
         let divider_color = match timer_status {
             Status::Hold => active_theme.cosmic().destructive_color(),
@@ -253,12 +265,7 @@ impl cosmic::Application for AppModel {
         page_content = page_content
             .push(Space::new().height(padding))
             .push(widget::divider::horizontal::default())
-            .push(
-                widget::text::text(self.timer.display())
-                    .size(140)
-                    .width(Length::Fill)
-                    .align_x(Alignment::Center),
-            )
+            .push(timer_text)
             .push(
                 container("")
                     .height(13)
@@ -524,6 +531,10 @@ impl cosmic::Application for AppModel {
                 let _ = self.config.set("app_theme", &self.app_theme);
                 return cosmic::command::set_theme(self.app_theme.theme());
             }
+            Message::TimerFontChange(index) => {
+                self.timer_font = TimerFont::ALL[index];
+                let _ = self.config.set("timer_font", &self.timer_font);
+            }
             Message::CubeUpdate(uid) => {
                 self.current_cube = self.cube_options[uid].clone();
                 self.record = self
@@ -612,12 +623,26 @@ impl AppModel {
         let theme_labels = vec![fl!("theme-system"), fl!("theme-dark"), fl!("theme-light")];
         let selected = AppTheme::ALL.iter().position(|t| *t == self.app_theme);
 
+        let timer_font_labels = vec![fl!("timer-font-default"), String::from("Segment7")];
+        let timer_font_selected = TimerFont::ALL.iter().position(|f| *f == self.timer_font);
+
         settings::view_column(vec![
             settings::section()
                 .title(fl!("appearance"))
                 .add(settings::item(
                     fl!("app-theme"),
                     dropdown(theme_labels, selected, Message::AppThemeChange),
+                ))
+                .into(),
+            settings::section()
+                .title(fl!("timer"))
+                .add(settings::item(
+                    fl!("timer-font"),
+                    dropdown(
+                        timer_font_labels,
+                        timer_font_selected,
+                        Message::TimerFontChange,
+                    ),
                 ))
                 .into(),
         ])
@@ -658,6 +683,27 @@ impl AppTheme {
         };
         theme.theme_type.prefer_dark(Some(self == AppTheme::Dark));
         theme
+    }
+}
+
+#[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+pub enum TimerFont {
+    #[default]
+    Default,
+    Segment7,
+}
+
+impl TimerFont {
+    pub const ALL: [TimerFont; 2] = [TimerFont::Default, TimerFont::Segment7];
+
+    pub fn font(self) -> Option<cosmic::iced::Font> {
+        match self {
+            TimerFont::Default => None,
+            TimerFont::Segment7 => Some(cosmic::iced::Font {
+                weight: cosmic::iced::font::Weight::Semibold,
+                ..cosmic::iced::Font::with_name("Segment7")
+            }),
+        }
     }
 }
 
